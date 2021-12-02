@@ -1,3 +1,4 @@
+import display_sim_window
 
 class display_sim:
     def __init__(self, sizex, sizey):
@@ -16,6 +17,8 @@ class display_sim:
         self.lock = [0] * sizex
         self.rotate_pos  = [0.0] * sizey
         self.block_angles = [[0.0]*sizey for i in range(sizex)]
+        self.window = display_sim_window.display_window(sizex, sizey,50,50,[[display_sim_window.blue_cube_func for y in range(sizey)] for x in range(sizex)])
+        return
     
     def set_locks(self, locks):
         """
@@ -26,6 +29,7 @@ class display_sim:
                 self.lock[x] = 1
             else:
                 self.lock[x] = 0
+        return
         
     def set_rotate(self, rotate):
         """
@@ -36,10 +40,23 @@ class display_sim:
             for x in range(self.sizex):
                 if(self.lock[x] == 0):
                     self.block_angles[x][y] += delta_rotate
+                    while self.block_angles[x][y] >= 1.0:
+                        #self.block_angles[x][y] = 0.99
+                        self.block_angles[x][y] -= 1.0
+                    while self.block_angles[x][y] <= 0.0:
+                        #self.block_angles[x][y] = 0.01
+                        self.block_angles[x][y] += 1.0
+                    self.window.set_cube(x,y, self.block_angles[x][y])
+        return
 
     def get_angle(self, x, y):
         return self.block_angles[x][y]
     
+    def update(self):
+        self.window.update()
+        return
+
+    '''
     def print_display(self, disp_func):
         for y in range(self.sizey):
             line = ""
@@ -51,3 +68,8 @@ def XO_display(angle):
     if(angle > 0.5):
         return "X"
     return "O"
+    '''
+if __name__ == '__main__':
+    display = display_sim(10,10)
+    while True:
+        i=10

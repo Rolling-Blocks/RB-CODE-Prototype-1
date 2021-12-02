@@ -1,4 +1,5 @@
 import write_display
+import display_sim
 import time
 
 
