@@ -35,12 +35,15 @@ class servo_arr:
         for tup in self.data:
             write = i2c_msg.write(tup[0], [(int(i * 255) % 256) for i in tup[1]])
             self.bus.i2c_rdwr(write)
+    
+    def get_servo(self, channel, servo_pos):
+        return self.data[channel][1][servo_pos]
 
 if __name__ == '__main__':
     servos = servo_arr(1,[10])
     index = 0
     while 1:
-        servos.set_servo(0, 11, index / 255.0)
+        servos.set_servo(0, 11, (index % 255) / 255.0)
         print(index)
         index += 10
         servos.write_servos()
