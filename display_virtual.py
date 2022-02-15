@@ -26,6 +26,24 @@ class display_virtual:
         # display viewer setup
         self.blockServoState = [DispDef.MIDDLE]*numBlockCol
 
+    def getPixelKey(self):
+        return self.pixelColors
+
+    def getDisplayState(self):
+        return self.displayState
+
+    def getBlockServoPos(self):
+        return self.blockServoState
+
+    def getBlockServoPos(self, col):
+        return self.blockServoState[col]
+
+    def getLockServoPos(self):
+        return self.lockServoState
+
+    def getLockServoPos(self, row):
+        return self.lockServoState[row]
+
     def setLockServo(self, row, state):
         self.lockServoState[row] = state
         self.updateDisp()
@@ -49,7 +67,7 @@ class display_virtual:
 
 if __name__ == '__main__':
     dispDimensions = (16, 16)
-    disp = display_virtual('6x9 test', dispDimensions[0], DispDef.TOP,  dispDimensions[1], DispDef.RIGHT,('#CD853F','#8B5A2B','#008080','#D8BFD8'))  
+    disp = display_virtual('6x9 test', dispDimensions[0], DispDef.TOP,  dispDimensions[1], DispDef.RIGHT,('#042940','#005C53','#9FC131','#DBF227'))  
     for i in range(0,16):
         disp.setLockServo(i, DispDef.LOCK)
     disp.updateDisp()

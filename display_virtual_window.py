@@ -103,7 +103,7 @@ class display_virtual_window:
                 blockServo[1], 
                 blockServo[0] + s * self.blockSideLength + self.servoDim[0], 
                 blockServo[1] + self.servoDim[1], 
-                fill = 'grey')
+                fill = 'white')
 
             offset = partitionWidth *  (1 + blockStateKey(self.blockServoState[s]))
             self.canvas.create_rectangle(
