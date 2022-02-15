@@ -5,9 +5,9 @@ from enum import Enum, auto
 class DispDef(Enum):
     #print(Enum.__file__)  
     # Block Actuator States
-    ADD = 1
-    MIDDLE = 0
     SUBTRACT = -1
+    MIDDLE = 0
+    ADD = 1
     # Lock Actuator States
     LOCK = auto()
     UNLOCK = auto()
@@ -18,5 +18,18 @@ class DispDef(Enum):
     LEFT = auto()
     RIGHT = auto()
 
+def blockStateKey(state):
+    num = -2
+    if state is DispDef.SUBTRACT:
+        num = -1
+    if state is DispDef.MIDDLE:
+        num = 0
+    if state is DispDef.ADD:
+        num = 1
+    return num
+
 if __name__ == '__main__':
     print(list(DispDef))
+    print(blockStateKey(DispDef.SUBTRACT))
+    print(blockStateKey(DispDef.MIDDLE))
+    print(blockStateKey(DispDef.ADD))

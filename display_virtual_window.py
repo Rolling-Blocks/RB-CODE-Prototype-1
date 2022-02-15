@@ -1,14 +1,11 @@
 import tkinter
-from disp_def import DispDef
+from disp_def import DispDef, blockStateKey
 import time
 from PIL import ImageColor
 from copy import copy, deepcopy
 
-def make_array(object, xdim, ydim):
-    return [[object for x in range(xdim)] for y in range(ydim)]
-
 class display_virtual_window:
-    def __init__(self, displayTitle, numBlockCol, blockSide, numLockRow, lockSide, pixelColors):
+    def __init__(self, displayTitle, numBlockCol, blockSide, numLockRow, lockSide, pixelColors, blockSideLength = 60, borderWidth = 30, servoDim = (45, 20)):
         # numLockRow ~ Height of Diplay
         self.numLockRow = numLockRow
         # lockSide ~ left/right
@@ -32,9 +29,9 @@ class display_virtual_window:
         # display viewer setup
         self.blockServoState = [DispDef.MIDDLE]*numBlockCol
 
-        self.blockSideLength = 60
-        self.borderWidth = 30
-        self.servoDim = (45, 20)
+        self.blockSideLength = blockSideLength
+        self.borderWidth = borderWidth
+        self.servoDim = servoDim
         xDispDim = self.servoDim[1] * 2 + self.numBlockCol * self.blockSideLength
         yDispDim = self.servoDim[1] * 2 + self.numLockRow * self.blockSideLength
 
@@ -47,20 +44,18 @@ class display_virtual_window:
             for y in range(0, self.numLockRow):
                 pass
                 #self.set_cube(x,y,0.0)
-        self.updateVirtualDisplay()
+        self.updateDisplay()
         return
 
-    def set_lockState(y, state):
-        return
+    def newFrame(self, displayState, lockState, blockStates):
+        self.displayState = displayState
+        self.lockServoState = lockState
+        self.blockServoState = blockStates
+        self.updateDisplay()
 
-    def get_lockstate(y):
-        state = 1
-        return state
-
-    def set_lockState(y, state):
-        return
-
-    def updateVirtualDisplay(self):
+    def updateDisplay(self):
+        self.canvas.delete("all")
+        
         xBlockOffset = 5
         yBlockOffset = -5
 
@@ -108,16 +103,9 @@ class display_virtual_window:
                 blockServo[1], 
                 blockServo[0] + s * self.blockSideLength + self.servoDim[0], 
                 blockServo[1] + self.servoDim[1], 
-                fill = 'red')
+                fill = 'grey')
 
-            if self.blockServoState[s] is DispDef.LEFT:
-                o = 0
-            if self.blockServoState[s] is DispDef.MIDDLE:
-                o = 1
-            if self.blockServoState[s] is DispDef.RIGHT:
-                o = 2
-
-            offset = partitionWidth * o
+            offset = partitionWidth *  (1 + blockStateKey(self.blockServoState[s]))
             self.canvas.create_rectangle(
                 blockServo[0] + s * self.blockSideLength + offset, 
                 blockServo[1], 
