@@ -1,11 +1,8 @@
 import tkinter
 from disp_def import DispDef
-import closest_color
 import time
 from PIL import ImageColor
-
 from copy import copy, deepcopy
-
 
 def make_array(object, xdim, ydim):
     return [[object for x in range(xdim)] for y in range(ydim)]
