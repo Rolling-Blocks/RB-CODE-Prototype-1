@@ -5,7 +5,7 @@ from PIL import ImageColor
 from copy import copy, deepcopy
 
 class display_virtual_window:
-    def __init__(self, displayTitle, numBlockCol, blockSide, numLockRow, lockSide, pixelColors, blockSideLength = 60, borderWidth = 30, servoDim = (45, 20)):
+    def __init__(self, displayTitle, numBlockCol, blockSide, numLockRow, lockSide, pixelColors, blockSideLength = 40, borderWidth = 30, servoDim = (30, 12)):
         # numLockRow ~ Height of Diplay
         self.numLockRow = numLockRow
         # lockSide ~ left/right
@@ -40,10 +40,6 @@ class display_virtual_window:
         self.canvas = tkinter.Canvas(self.root, width=xDispDim, height=yDispDim)
         self.canvas.pack(pady=self.borderWidth, padx=self.borderWidth)
 
-        for x in range(0, self.numBlockCol):
-            for y in range(0, self.numLockRow):
-                pass
-                #self.set_cube(x,y,0.0)
         self.updateDisplay()
         return
 
@@ -83,6 +79,7 @@ class display_virtual_window:
         
         blockServo[0] = xBlockOffset + (self.blockSideLength - self.servoDim[0])/2
         lockServo[1] = yBlockOffset + (self.blockSideLength - self.servoDim[0])/2
+
 
         for s in range(0,len(self.lockServoState)):
             if self.lockServoState[s] is DispDef.LOCK:
@@ -125,9 +122,10 @@ class display_virtual_window:
         return
 
 if __name__ == '__main__':
-    window = display_virtual_window('6x9 test', 16, DispDef.TOP, 16, DispDef.RIGHT,('#CD853F','#8B5A2B','#008080','#D8BFD8'))  
+    window = display_virtual_window('6x9 test', 6, DispDef.TOP, 9, DispDef.RIGHT,('#CD853F','#8B5A2B','#008080','#D8BFD8'))  
     i = 1
     while True:
         time.sleep(1)
+        window.updateDisplay()
         i += 1
         #print(i)

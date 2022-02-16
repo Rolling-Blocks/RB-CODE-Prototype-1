@@ -68,7 +68,7 @@ class display_virtual:
 if __name__ == '__main__':
     dispDimensions = (16, 16)
     disp = display_virtual('6x9 test', dispDimensions[0], DispDef.TOP,  dispDimensions[1], DispDef.RIGHT,('#042940','#005C53','#9FC131','#DBF227'))  
-    for i in range(0,16):
+    for i in range(0,15):
         disp.setLockServo(i, DispDef.LOCK)
     disp.updateDisp()
 

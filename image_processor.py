@@ -1,3 +1,4 @@
+import skimage
 from skimage import color
 from skimage import io
 import numpy as numpy
@@ -25,6 +26,6 @@ if __name__ == '__main__':
     resized[12][9] = 0
 
 
-    plt.imshow(resized, cmap='gray')
+    plt.imshow(imgGray, cmap='gray')
 
     plt.show()
