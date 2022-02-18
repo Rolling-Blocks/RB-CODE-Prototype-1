@@ -50,11 +50,11 @@ class display_virtual:
       
     def setBlockServo(self, column, state):
         #print('initial: ' + str(blockStateKey(self.blockServoState[column])) + '  final' + str(blockStateKey(state)))
-        columnChange = blockStateKey(state) - blockStateKey(self.lockServoState[column])
+        columnChange = blockStateKey(state) - blockStateKey(self.blockServoState[column])
         self.blockServoState[column] = state
         for y in range(0,len(self.displayState)):
             if self.lockServoState[y] is DispDef.UNLOCK:
-                self.displayState[y][column] = (self.displayState[column][y] + columnChange) % 4
+                self.displayState[y][column] = (self.displayState[y][column] + columnChange) % 4
         self.updateDisp()
 
     #prints displat as a 2d array of int values
@@ -66,17 +66,17 @@ class display_virtual:
         self.wind.newFrame(self.displayState, self.lockServoState, self.blockServoState)
 
 if __name__ == '__main__':
-    dispDimensions = (16, 16)
-    disp = display_virtual('6x9 test', dispDimensions[0], DispDef.TOP,  dispDimensions[1], DispDef.RIGHT,('#042940','#005C53','#9FC131','#DBF227'))  
-    for i in range(0,15):
+    dispDimensions = (8, 16) # rows, columns
+    disp = display_virtual('6x9 test', dispDimensions[1], DispDef.TOP,  dispDimensions[0], DispDef.RIGHT,('#042940','#005C53','#9FC131','#DBF227'))  
+    for i in range(0,7):
         disp.setLockServo(i, DispDef.LOCK)
     disp.updateDisp()
 
     i = 1
     while True:
-        x = random.randint(0,dispDimensions[0]-1)
-        y = random.randint(0,dispDimensions[1]-1)
-        
+        x = random.randint(0,dispDimensions[1]-1)
+        y = random.randint(0,dispDimensions[0]-1)
+        print(str(x) + ', ' + str(y))
         t = 0.05
 
         disp.setLockServo(y, DispDef.UNLOCK)
