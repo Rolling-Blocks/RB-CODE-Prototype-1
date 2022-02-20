@@ -66,9 +66,9 @@ class display_virtual:
         self.wind.newFrame(self.displayState, self.lockServoState, self.blockServoState)
 
 if __name__ == '__main__':
-    dispDimensions = (8, 16) # rows, columns
+    dispDimensions = (16, 16) # rows, columns
     disp = display_virtual('6x9 test', dispDimensions[1], DispDef.TOP,  dispDimensions[0], DispDef.RIGHT,('#042940','#005C53','#9FC131','#DBF227'))  
-    for i in range(0,7):
+    for i in range(0,dispDimensions[0]):
         disp.setLockServo(i, DispDef.LOCK)
     disp.updateDisp()
 
@@ -76,7 +76,6 @@ if __name__ == '__main__':
     while True:
         x = random.randint(0,dispDimensions[1]-1)
         y = random.randint(0,dispDimensions[0]-1)
-        print(str(x) + ', ' + str(y))
         t = 0.05
 
         disp.setLockServo(y, DispDef.UNLOCK)
@@ -90,4 +89,3 @@ if __name__ == '__main__':
 
         disp.setBlockServo(x, DispDef.MIDDLE)
         time.sleep(t)
-        #print(i)
