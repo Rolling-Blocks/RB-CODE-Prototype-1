@@ -22,6 +22,7 @@ class image_processor:
         self.imgTitle = image_title
         print("imported Image Title = " + self.imgTitle + " ----- of type " + str(type(self.imgTitle)))
 
+    # split self off
     def pixelAverageVal(self, downsized):
         sum = 0
         print(downsized.shape)
@@ -36,6 +37,7 @@ class image_processor:
         plt.imshow(r)
         plt.show()
 
+    # split self off
     def imageResizeRGB(self):
         img = cv2.imread(self.imgTitle)
         resized = cv2.resize(img, (self.dispWidth, self.dispHeight), interpolation = cv2.INTER_AREA)
@@ -46,6 +48,7 @@ class image_processor:
         plt.imshow(r, cmap = "gray")
         plt.show()
 
+    # split self off
     def imageResizeBW(self):
         img = cv2.imread(self.imgTitle)
         imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -53,7 +56,8 @@ class image_processor:
         return resized
 
     def reduceColors(self, img, K):
-        Z = img.reshape((-1,3))
+        n = img[0][0].size
+        Z = img.reshape((-1,n))
 
         # convert to np.float32
         Z = np.float32(Z)
@@ -66,15 +70,26 @@ class image_processor:
         center = np.uint8(center)
         res = center[label.flatten()]
         res2 = res.reshape((img.shape))
-        cv2.imshow('res2',res2)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        return res2
+
+    def removeColors(self, img):
+        recorded = []
+        for y in range(0,len(img)):        
+            for x in range(0,len(img[0])):
+                if img[y][x] not in recorded:
+                    recorded.append(img[y][x])
+        recorded.sort()
+        return recorded
+
 
 if __name__ == '__main__':
-    ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), 32, 32)
+    ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), 16, 16)
     ip.newImage('Ideas_Surprised_Pikachu_HD.jpg')
-    ## ip.displayBW()
-    ip.reduceColors(ip.imageResizeRGB(), 4)
+    k = 4
+    res2 = ip.reduceColors(ip.imageResizeBW(), k)
+    print(res2)
+    ttt = ip.removeColors(res2)
+    print(ttt)
     i = 0
     while True:
         time.sleep(1)
