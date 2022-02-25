@@ -83,22 +83,17 @@ class image_processor:
                         imgCopy[y][x] = n
         return imgCopy
 
-    def defaultConverter(selfn, imgTitle, k = 4):
-        ip.newImage(imgTitle)
+    def defaultConverter(self, imgTitle, k = 4):
+        self.newImage(imgTitle)
         bw = ip.imageResizeBW()
         lowRes = ip.reduceColors(bw, k)
-        remapped = ip.removeColors(res2)
+        remapped = ip.removeColors(lowRes)
         return remapped
 
 if __name__ == '__main__':
     ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), 16, 16)
-    ip.newImage('Ideas_Surprised_Pikachu_HD.jpg')
-    k = 4
-    res2 = ip.reduceColors(ip.imageResizeBW(), k)
-    print(res2)
-    ttt = ip.removeColors(res2)
-    print(ttt)
-    i = 0
+    print(ip.defaultConverter('Ideas_Surprised_Pikachu_HD.jpg'))
+    i = 1
     while True:
         time.sleep(1)
         i += 1
