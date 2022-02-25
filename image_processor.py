@@ -23,16 +23,6 @@ class image_processor:
         self.imgTitle = image_title
         print("imported Image Title = " + self.imgTitle + " ----- of type " + str(type(self.imgTitle)))
 
-    # split self off
-    def pixelAverageVal(self, downsized):
-        sum = 0
-        print(downsized.shape)
-        h, w = downsized.shape
-        for y in range(0,h):
-            for x in range(0,w):
-                sum += downsized[y][x]
-        return sum / (h * w)
-
     def displayRGB(self):
         r = self.imageResizeRGB()
         plt.imshow(r)
