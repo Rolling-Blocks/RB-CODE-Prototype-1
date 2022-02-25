@@ -26,29 +26,41 @@ class animation:
     def setDesiredState(self, desiredState):
         self.desiredState = desiredState
 
-    def findDif(self):
+    def findDifMat(self):
         self.difference = self.desiredState - self.initialState
         self.difference = (self.difference + 1) % 4 - 1
         return self.difference
+
+    def leastDifRow(self, diffArr):
+        leastDifRow = 0
+        leastDifRowVal = len(diffArr[0]) * 4
+        for row in range(0,len(diffArr)):
+            holder = 0
+            for col in range(0,len(diffArr[0])): 
+                holder += abs(diffArr[row][col])
+            if holder < leastDifRowVal:
+                leastDifRow = row
+                leastDifRowVal = holder
+        return leastDifRow
 
 if __name__ == '__main__':
     w = 16
     h = 16
     a = animation(w, h)
 
-    initState =  np.random.randint(0,4, size=(h,w))
-    print("initialState")
-    print(initState)
+    initState = np.random.randint(0,4, size=(h,w))
     a.setInitialState(initState)
-
-    desState =  np.random.randint(0,4, size=(h,w))
-    print("desiredState")
-    print(desState)
+    desState = np.random.randint(0,4, size=(h,w))
     a.setDesiredState(desState)
+    diff = a.findDifMat()
+    ldRow = a.leastDifRow(diff)
 
-    diff = a.findDif()
+    print("init")
+    print(initState[ldRow])
+    print("des")
+    print(desState[ldRow])
     print("diff")
-    print(diff)
+    print(diff[ldRow])
 
     i = 1
     while True:
