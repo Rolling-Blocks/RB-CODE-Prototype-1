@@ -4,6 +4,7 @@ from skimage import io
 import numpy as np
 import time
 import cv2
+import copy
 from statistics import mean, stdev
 
 from matplotlib import pyplot as plt
@@ -73,14 +74,21 @@ class image_processor:
         return res2
 
     def removeColors(self, img):
-        recorded = []
+        recorded = np.unique(img)
+        imgCopy = copy.deepcopy(img)
         for y in range(0,len(img)):        
             for x in range(0,len(img[0])):
-                if img[y][x] not in recorded:
-                    recorded.append(img[y][x])
-        recorded.sort()
-        return recorded
+                for n in range(0,len(recorded)):
+                    if imgCopy[y][x] == recorded[n]:
+                        imgCopy[y][x] = n
+        return imgCopy
 
+    def defaultConverter(selfn, imgTitle, k = 4):
+        ip.newImage(imgTitle)
+        bw = ip.imageResizeBW()
+        lowRes = ip.reduceColors(bw, k)
+        remapped = ip.removeColors(res2)
+        return remapped
 
 if __name__ == '__main__':
     ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), 16, 16)
