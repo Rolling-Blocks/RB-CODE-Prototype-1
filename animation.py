@@ -32,16 +32,14 @@ class animation:
         return self.difference
 
     def leastDifRow(self, diffArr):
-        leastDifRow = 0
-        leastDifRowVal = len(diffArr[0]) * 4
-        for row in range(0,len(diffArr)):
-            holder = 0
-            for col in range(0,len(diffArr[0])): 
-                holder += abs(diffArr[row][col])
-            if holder < leastDifRowVal and not leastDifRowVal == 0:
-                leastDifRow = row
-                leastDifRowVal = holder
-        return leastDifRow
+        difs = self.getDifOfRows(diffArr)
+        print("difs " + str(difs))
+        leastIndex = 0
+        for i in range(1,len(difs)):
+            if difs[i] < difs[leastIndex] and not difs[i] == 0:
+                leastIndex = i
+        print("least val " + str(difs[leastIndex]))
+        return leastIndex
 
     def getDifOfRows(self, diffArr):
         rowDifs = np.zeros(len(diffArr))
@@ -50,15 +48,46 @@ class animation:
                 rowDifs[row] += abs(diffArr[row][col])
         return rowDifs
 
+    # Returns what rows the change decreases delta from desired row state.
     def changeHelpRow(self, diffArr, change):
-        doChange = np.zeros(len(diffArr))
-        allChanged = copy.deepcopy(diffArr)
+        changed = copy.deepcopy(diffArr)
         for row in range(0,len(diffArr)):
             for col in range(0,len(diffArr[0])):
-                allChanged[row][col] -= change[col]
-            if self.leastDifRow([diffArr[row], allChanged[row]]) == 1:
-                doChange[row] = True
-        return doChange 
+                changed[row][col] -= change[col]
+        offsetWithChange = self.getDifOfRows(changed)
+        #print("offsetWithChange     " + str(offsetWithChange))
+        offsetWithoutChange = self.getDifOfRows(diffArr)
+        #print("offsetWithoutChange  " + str(offsetWithoutChange)) 
+
+        changeHelp = []
+        for row in range(0,len(diffArr)):
+            if offsetWithChange[row] < offsetWithoutChange[row]:
+                changeHelp.append(row)
+        #print("Change Help " + str(changeHelp))
+        return changeHelp
+
+    def ifAllZeros(self, a):
+        for row in range(0,len(a)):
+            for col in range(0,len(a[0])):
+                if not changed[row][col] == 0:
+                    return False
+        return True
+                
+
+    def makeMoveQue(self, da):
+        diffArr = copy.deepcopy(da)
+        moveQue = []
+        while(not np.all(diffArr == 0)):
+            print("least dif row: " + str(self.leastDifRow(diffArr)))
+            change = copy.deepcopy(diffArr[self.leastDifRow(diffArr)])
+            unlock = self.changeHelpRow(diffArr, change) 
+            for i in range(0,len(unlock)): 
+                diffArr[unlock[i]] -= change
+            moveQue.append([change, unlock])
+            print("move que added: " + str(moveQue[-1])) 
+            time.sleep(1)
+            
+        return moveQue
 
 if __name__ == '__main__':
     w = 16
@@ -78,13 +107,10 @@ if __name__ == '__main__':
     print(desState)
     print("diff")
     print(diff)
-    print(ldRow)
-    print(diff[ldRow])
-    print("row diffs")
-    print(a.getDifOfRows(diff))
 
-    doChange = a.changeHelpRow(diff, diff[ldRow])    
-    print(doChange)
+    print(a.makeMoveQue(diff))
+
+
 
     i = 1
     while True:
