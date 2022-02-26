@@ -38,10 +38,27 @@ class animation:
             holder = 0
             for col in range(0,len(diffArr[0])): 
                 holder += abs(diffArr[row][col])
-            if holder < leastDifRowVal:
+            if holder < leastDifRowVal and not leastDifRowVal == 0:
                 leastDifRow = row
                 leastDifRowVal = holder
         return leastDifRow
+
+    def getDifOfRows(self, diffArr):
+        rowDifs = np.zeros(len(diffArr))
+        for row in range(0,len(diffArr)):
+            for col in range(0,len(diffArr[0])): 
+                rowDifs[row] += abs(diffArr[row][col])
+        return rowDifs
+
+    def changeHelpRow(self, diffArr, change):
+        doChange = np.zeros(len(diffArr))
+        allChanged = copy.deepcopy(diffArr)
+        for row in range(0,len(diffArr)):
+            for col in range(0,len(diffArr[0])):
+                allChanged[row][col] -= change[col]
+            if self.leastDifRow([diffArr[row], allChanged[row]]) == 1:
+                doChange[row] = True
+        return doChange 
 
 if __name__ == '__main__':
     w = 16
@@ -56,11 +73,18 @@ if __name__ == '__main__':
     ldRow = a.leastDifRow(diff)
 
     print("init")
-    print(initState[ldRow])
+    print(initState)
     print("des")
-    print(desState[ldRow])
+    print(desState)
     print("diff")
+    print(diff)
+    print(ldRow)
     print(diff[ldRow])
+    print("row diffs")
+    print(a.getDifOfRows(diff))
+
+    doChange = a.changeHelpRow(diff, diff[ldRow])    
+    print(doChange)
 
     i = 1
     while True:
