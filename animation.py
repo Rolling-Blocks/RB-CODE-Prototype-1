@@ -33,12 +33,14 @@ class animation:
 
     def leastDifRow(self, diffArr):
         difs = self.getDifOfRows(diffArr)
-        print("difs " + str(difs))
+        #print("difs " + str(difs))
         leastIndex = 0
-        for i in range(1,len(difs)):
-            if difs[i] < difs[leastIndex] and not difs[i] == 0:
+        leastVal = len(difs) * 1000
+        for i in range(0,len(difs)):
+            if difs[i] < leastVal and not difs[i] == 0:
                 leastIndex = i
-        print("least val " + str(difs[leastIndex]))
+                leastVal = difs[i]
+        #print("least val " + str(difs[leastIndex]))
         return leastIndex
 
     def getDifOfRows(self, diffArr):
@@ -71,22 +73,26 @@ class animation:
             for col in range(0,len(a[0])):
                 if not changed[row][col] == 0:
                     return False
-        return True
-                
+        return True             
 
     def makeMoveQue(self, da):
         diffArr = copy.deepcopy(da)
         moveQue = []
-        while(not np.all(diffArr == 0)):
-            print("least dif row: " + str(self.leastDifRow(diffArr)))
+        while(True):
             change = copy.deepcopy(diffArr[self.leastDifRow(diffArr)])
             unlock = self.changeHelpRow(diffArr, change) 
+            #print("QUE ADDED")
+            #print("change: " + str(change))
+            #print("unlock: " + str(unlock))
             for i in range(0,len(unlock)): 
                 diffArr[unlock[i]] -= change
+            diffArr = (diffArr + 1) % 4 -1 
             moveQue.append([change, unlock])
-            print("move que added: " + str(moveQue[-1])) 
-            time.sleep(1)
-            
+            #time.sleep(.5) 
+            if np.all(diffArr == 0):
+                break
+        #print("diffArr")
+        #print(diffArr)     
         return moveQue
 
 if __name__ == '__main__':
@@ -108,8 +114,9 @@ if __name__ == '__main__':
     print("diff")
     print(diff)
 
-    print(a.makeMoveQue(diff))
+    mq = a.makeMoveQue(diff)
 
+    print(mq)
 
 
     i = 1
