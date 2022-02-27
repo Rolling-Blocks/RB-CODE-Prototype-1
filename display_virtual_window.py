@@ -5,13 +5,13 @@ from PIL import ImageColor
 from copy import copy, deepcopy
 
 class display_virtual_window:
-    def __init__(self, displayTitle, numBlockCol, blockSide, numLockRow, lockSide, pixelColors, blockSideLength = 40, borderWidth = 30, servoDim = (30, 12)):
+    def __init__(self, displayTitle, dismDim, blockSide, lockSide, pixelColors, blockSideLength = 40, borderWidth = 30, servoDim = (30, 12)):
         # numLockRow ~ Height of Diplay
-        self.numLockRow = numLockRow
+        self.numLockRow = dismDim[1]
         # lockSide ~ left/right
         self.lockSide = lockSide
         # numBlockCol ~ width of Diplay
-        self.numBlockCol = numBlockCol
+        self.numBlockCol = dismDim[0]
         # blockSide ~ top/bottom
         self.blockSide = blockSide
         # pixelColors (pixelcolor0,pixelcolor1,pixelcolor2,pixelcolor3) pixel color values  
@@ -21,13 +21,13 @@ class display_virtual_window:
         self.root.title('Mechanical Display Simulator "' + displayTitle + '"')
 
         # state of virtual display stored as cube positions 0-3, position corresponds to color in location in pixelcolors
-        self.displayState = [[0]*numBlockCol for i in range(numLockRow)]
+        self.displayState = [[0]*self.numBlockCol for i in range(self.numLockRow)]
         
         #states of locks unlocked/locked
-        self.lockServoState = [DispDef.UNLOCK]*numLockRow
+        self.lockServoState = [DispDef.UNLOCK]*self.numLockRow
 
         # display viewer setup
-        self.blockServoState = [DispDef.MIDDLE]*numBlockCol
+        self.blockServoState = [DispDef.MIDDLE]*self.numBlockCol
 
         self.blockSideLength = blockSideLength
         self.borderWidth = borderWidth
@@ -122,7 +122,10 @@ class display_virtual_window:
         return
 
 if __name__ == '__main__':
-    window = display_virtual_window('6x9 test', 6, DispDef.TOP, 9, DispDef.RIGHT,('#CD853F','#8B5A2B','#008080','#D8BFD8'))  
+    dispDim = (5, 9) # (width, height)
+    pixelVal = ('#CD853F','#8B5A2B','#008080','#D8BFD8')
+    displayTit = '6x9 test'
+    window = display_virtual_window(displayTit, dispDim, DispDef.TOP, DispDef.RIGHT, pixelVal)  
     i = 1
     while True:
         time.sleep(1)
