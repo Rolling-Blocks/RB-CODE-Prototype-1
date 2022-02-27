@@ -1,30 +1,30 @@
-import display_virtual_window
+import display_virtual_window as dvw
 import random
 import time
 from disp_def import DispDef, blockStateKey
 
 class display_virtual:
-    def __init__(self, displayTitle, numBlockCol, blockSide, numLockRow, lockSide, pixelColors):
-        self.wind = display_virtual_window.display_virtual_window(displayTitle, numBlockCol, blockSide, numLockRow, lockSide, pixelColors)
+    def __init__(self, displayTitle, dispDim, blockSide, lockSide, pixelColors):
+        self.wind = dvw.display_virtual_window(displayTitle, dispDim, blockSide, lockSide, pixelColors)
         # numLockRow ~ Height of Diplay
-        self.numLockRow = numLockRow
+        self.numLockRow = dispDim[1]
         # lockSide ~ left/right
         self.lockSide = lockSide
         # numBlockCol ~ width of Diplay
-        self.numBlockCol = numBlockCol
+        self.numBlockCol = dispDim[0]
         # blockSide ~ top/bottom
         self.blockSide = blockSide
         # pixelColors (pixelcolor0,pixelcolor1,pixelcolor2,pixelcolor3) pixel color values  
         self.pixelColors = pixelColors
 
         # state of virtual display stored as cube positions 0-3, position corresponds to color in location in pixelcolors
-        self.displayState = [[0]*numBlockCol for i in range(numLockRow)]
+        self.displayState = [[0]*self.numBlockCol for i in range(self.numLockRow)]
         
         #states of locks unlocked/locked
-        self.lockServoState = [DispDef.UNLOCK]*numLockRow
+        self.lockServoState = [DispDef.UNLOCK]*self.numLockRow
 
         # display viewer setup
-        self.blockServoState = [DispDef.MIDDLE]*numBlockCol
+        self.blockServoState = [DispDef.MIDDLE]*self.numBlockCol
 
     def getPixelKey(self):
         return self.pixelColors
@@ -66,26 +66,33 @@ class display_virtual:
         self.wind.newFrame(self.displayState, self.lockServoState, self.blockServoState)
 
 if __name__ == '__main__':
-    dispDimensions = (16, 16) # rows, columns
-    disp = display_virtual('6x9 test', dispDimensions[1], DispDef.TOP,  dispDimensions[0], DispDef.RIGHT,('#042940','#005C53','#9FC131','#DBF227'))  
-    for i in range(0,dispDimensions[0]):
+    dispDimensions = (6, 6) # (width, height)
+    pixelVal = ('#CD853F','#8B5A2B','#008080','#D8BFD8')
+    displayTit = '6x9 test'
+    disp = display_virtual(displayTit, dispDimensions, DispDef.TOP, DispDef.RIGHT, pixelVal)  
+    disp.printDispVal()
+    for i in range(0,dispDimensions[1]):
         disp.setLockServo(i, DispDef.LOCK)
     disp.updateDisp()
 
     i = 1
     while True:
-        x = random.randint(0,dispDimensions[1]-1)
-        y = random.randint(0,dispDimensions[0]-1)
-        t = 0.05
+        x = random.randint(0,dispDimensions[0]-1)
+        y = random.randint(0,dispDimensions[1]-1)
+        t = 0.01
 
         disp.setLockServo(y, DispDef.UNLOCK)
+        disp.updateDisp()
         time.sleep(t)
 
         disp.setBlockServo(x, DispDef.ADD)
+        disp.updateDisp()
         time.sleep(t)
         
         disp.setLockServo(y, DispDef.LOCK)
+        disp.updateDisp()
         time.sleep(t)
 
         disp.setBlockServo(x, DispDef.MIDDLE)
+        disp.updateDisp()
         time.sleep(t)

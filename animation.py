@@ -26,12 +26,12 @@ class animation:
     def setDesiredState(self, desiredState):
         self.desiredState = desiredState
 
-    def findDifMat(self):
+    def _findDifMat(self):
         self.difference = self.desiredState - self.initialState
         self.difference = (self.difference + 1) % 4 - 1
         return self.difference
 
-    def leastDifRow(self, diffArr):
+    def _leastDifRow(self, diffArr):
         difs = self.getDifOfRows(diffArr)
         #print("difs " + str(difs))
         leastIndex = 0
@@ -43,7 +43,7 @@ class animation:
         #print("least val " + str(difs[leastIndex]))
         return leastIndex
 
-    def getDifOfRows(self, diffArr):
+    def _getDifOfRows(self, diffArr):
         rowDifs = np.zeros(len(diffArr))
         for row in range(0,len(diffArr)):
             for col in range(0,len(diffArr[0])): 
@@ -51,7 +51,7 @@ class animation:
         return rowDifs
 
     # Returns what rows the change decreases delta from desired row state.
-    def changeHelpRow(self, diffArr, change):
+    def _changeHelpRow(self, diffArr, change):
         changed = copy.deepcopy(diffArr)
         for row in range(0,len(diffArr)):
             for col in range(0,len(diffArr[0])):
@@ -68,15 +68,8 @@ class animation:
         #print("Change Help " + str(changeHelp))
         return changeHelp
 
-    def ifAllZeros(self, a):
-        for row in range(0,len(a)):
-            for col in range(0,len(a[0])):
-                if not changed[row][col] == 0:
-                    return False
-        return True             
-
-    def makeMoveQue(self, da):
-        diffArr = copy.deepcopy(da)
+    def makeMoveQue(self):
+        diffArr = copy.deepcopy(self.findDifMat())
         moveQue = []
         while(True):
             change = copy.deepcopy(diffArr[self.leastDifRow(diffArr)])
@@ -118,7 +111,7 @@ if __name__ == '__main__':
     print("diff")
     print(diff)
 
-    mq = a.makeMoveQue(diff)
+    mq = a.makeMoveQue()
     a.printMq(mq)
 
     i = 1

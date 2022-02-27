@@ -19,34 +19,34 @@ class image_processor:
 
         #print('processor extablished for ' + displayName + ' dimension: ' + str(self.displayWidth) + 'x' + str(self.displayHeight) + ' pixel values: ' + pixelValues)
 
-    def newImage(self, image_title):
+    def _newImage(self, image_title):
         self.imgTitle = image_title
         print("imported Image Title = " + self.imgTitle + " ----- of type " + str(type(self.imgTitle)))
 
-    def displayRGB(self):
+    def _displayRGB(self):
         r = self.imageResizeRGB()
         plt.imshow(r)
         plt.show()
 
     # split self off
-    def imageResizeRGB(self):
+    def _imageResizeRGB(self):
         img = cv2.imread(self.imgTitle)
         resized = cv2.resize(img, (self.dispWidth, self.dispHeight), interpolation = cv2.INTER_AREA)
         return resized
 
-    def displayBW(self):
+    def _displayBW(self):
         r = self.imageResizeBW()
         plt.imshow(r, cmap = "gray")
         plt.show()
 
     # split self off
-    def imageResizeBW(self):
+    def _imageResizeBW(self):
         img = cv2.imread(self.imgTitle)
         imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         resized = cv2.resize(imgGray, (self.dispWidth, self.dispHeight), interpolation = cv2.INTER_AREA)
         return resized
 
-    def reduceColors(self, img, K):
+    def _reduceColors(self, img, K):
         n = img[0][0].size
         Z = img.reshape((-1,n))
 
@@ -63,7 +63,7 @@ class image_processor:
         res2 = res.reshape((img.shape))
         return res2
 
-    def removeColors(self, img):
+    def _removeColors(self, img):
         recorded = np.unique(img)
         imgCopy = copy.deepcopy(img)
         for y in range(0,len(img)):        
