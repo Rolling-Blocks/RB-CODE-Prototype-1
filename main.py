@@ -78,9 +78,6 @@ def rotate_cube_rev(servodisp, row, col):
     smooth_rotate(servos, col, 0.2)
     lock_all(servos)
 
-
-
-
 random.seed(45646481)
 
 servos = write_display.servo_arr(1,[10, 11])

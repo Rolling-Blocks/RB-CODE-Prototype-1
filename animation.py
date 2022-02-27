@@ -99,7 +99,6 @@ class animation:
         for m in range(0, len(mq)):
             print("Blocks: " + str(mq[m][0]) + " Locks: " + str(mq[m][1]))
                 
-
 if __name__ == '__main__':
     w = 16
     h = 16
@@ -112,10 +111,10 @@ if __name__ == '__main__':
     diff = a.findDifMat()
     ldRow = a.leastDifRow(diff)
 
-    print("init")
-    print(initState)
-    print("des")
-    print(desState)
+    #print("init")
+    #print(initState)
+    #print("des")
+    #print(desState)
     print("diff")
     print(diff)
 
