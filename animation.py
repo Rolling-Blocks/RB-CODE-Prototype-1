@@ -95,6 +95,11 @@ class animation:
         #print(diffArr)     
         return moveQue
 
+    def printMq(self, mq):
+        for m in range(0, len(mq)):
+            print("Blocks: " + str(mq[m][0]) + " Locks: " + str(mq[m][1]))
+                
+
 if __name__ == '__main__':
     w = 16
     h = 16
@@ -115,9 +120,7 @@ if __name__ == '__main__':
     print(diff)
 
     mq = a.makeMoveQue(diff)
-
-    print(mq)
-
+    a.printMq(mq)
 
     i = 1
     while True:
