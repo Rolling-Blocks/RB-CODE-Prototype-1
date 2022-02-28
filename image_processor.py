@@ -11,10 +11,10 @@ from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 
 class image_processor:
-    def __init__(self, pixelValues, displayWidth = 16, displayHeight = 16): #displayName = 'generic display'
+    def __init__(self, pixelValues, displayDim): #displayName = 'generic display'
         # Final Image Dimensions and Colors
-        self.dispWidth = displayWidth
-        self.dispHeight = displayHeight
+        self.dispWidth = displayDim[0]
+        self.dispHeight = displayDim[1]
         self.pixelColors = pixelValues
 
         #print('processor extablished for ' + displayName + ' dimension: ' + str(self.displayWidth) + 'x' + str(self.displayHeight) + ' pixel values: ' + pixelValues)
@@ -24,7 +24,7 @@ class image_processor:
         print("imported Image Title = " + self.imgTitle + " ----- of type " + str(type(self.imgTitle)))
 
     def _displayRGB(self):
-        r = self.imageResizeRGB()
+        r = self._imageResizeRGB()
         plt.imshow(r)
         plt.show()
 
@@ -35,7 +35,7 @@ class image_processor:
         return resized
 
     def _displayBW(self):
-        r = self.imageResizeBW()
+        r = self._imageResizeBW()
         plt.imshow(r, cmap = "gray")
         plt.show()
 
@@ -74,14 +74,15 @@ class image_processor:
         return imgCopy
 
     def defaultConverter(self, imgTitle, k = 4):
-        self.newImage(imgTitle)
-        bw = ip.imageResizeBW()
-        lowRes = ip.reduceColors(bw, k)
-        remapped = ip.removeColors(lowRes)
+        self._newImage(imgTitle)
+        bw = ip._imageResizeBW()
+        lowRes = ip._reduceColors(bw, k)
+        remapped = ip._removeColors(lowRes)
         return remapped
 
 if __name__ == '__main__':
-    ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), 16, 16)
+    dispDim = (6, 6)
+    ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), dispDim)
     print(ip.defaultConverter('Ideas_Surprised_Pikachu_HD.jpg'))
     i = 1
     while True:

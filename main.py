@@ -1,11 +1,18 @@
-import write_display
 import time
 import random
-import DispDef
-from animation import __init__, setInitialState, setDesiredState, makeMoveQue
-from image_processor import __init__, defaultConverter
-import display_virtual
- 
+from disp_def import DispDef, blockStateKey
+import animation as ani
+import image_processor as impr
+import display_virtual as disvir
+
+dispDim = (6, 6) # (width, height)
+pixelVal = ('#CD853F','#8B5A2B','#008080','#D8BFD8')
+displayTit = '6x9 test'
+a = ani.animation()
+ip = impr.image_processor(pixelVal, dispDim)
+disp = disvir.display_virtual(displayTit, dispDim, DispDef.TOP, DispDef.RIGHT, pixelVal)  
+
+#copmiles till here
 
 random.seed(45646481)
 

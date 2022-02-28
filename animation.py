@@ -32,7 +32,7 @@ class animation:
         return self.difference
 
     def _leastDifRow(self, diffArr):
-        difs = self.getDifOfRows(diffArr)
+        difs = self._getDifOfRows(diffArr)
         #print("difs " + str(difs))
         leastIndex = 0
         leastVal = len(difs) * 1000
@@ -56,9 +56,9 @@ class animation:
         for row in range(0,len(diffArr)):
             for col in range(0,len(diffArr[0])):
                 changed[row][col] -= change[col]
-        offsetWithChange = self.getDifOfRows(changed)
+        offsetWithChange = self._getDifOfRows(changed)
         #print("offsetWithChange     " + str(offsetWithChange))
-        offsetWithoutChange = self.getDifOfRows(diffArr)
+        offsetWithoutChange = self._getDifOfRows(diffArr)
         #print("offsetWithoutChange  " + str(offsetWithoutChange)) 
 
         changeHelp = []
@@ -69,11 +69,11 @@ class animation:
         return changeHelp
 
     def makeMoveQue(self):
-        diffArr = copy.deepcopy(self.findDifMat())
+        diffArr = copy.deepcopy(self._findDifMat())
         moveQue = []
         while(True):
-            change = copy.deepcopy(diffArr[self.leastDifRow(diffArr)])
-            unlock = self.changeHelpRow(diffArr, change) 
+            change = copy.deepcopy(diffArr[self._leastDifRow(diffArr)])
+            unlock = self._changeHelpRow(diffArr, change) 
             #print("QUE ADDED")
             #print("change: " + str(change))
             #print("unlock: " + str(unlock))
@@ -101,8 +101,8 @@ if __name__ == '__main__':
     a.setInitialState(initState)
     desState = np.random.randint(0,4, size=(h,w))
     a.setDesiredState(desState)
-    diff = a.findDifMat()
-    ldRow = a.leastDifRow(diff)
+    diff = a._findDifMat()
+    ldRow = a._leastDifRow(diff)
 
     #print("init")
     #print(initState)
