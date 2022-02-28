@@ -6,16 +6,20 @@ import time
 import cv2
 import copy
 from statistics import mean, stdev
+import os
+import random
 
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 
 class image_processor:
-    def __init__(self, pixelValues, displayDim): #displayName = 'generic display'
+    def __init__(self, pixelValues, displayDim, image_folder): #displayName = 'generic display'
         # Final Image Dimensions and Colors
         self.dispWidth = displayDim[0]
         self.dispHeight = displayDim[1]
         self.pixelColors = pixelValues
+
+        self.image_folder = image_folder
 
         #print('processor extablished for ' + displayName + ' dimension: ' + str(self.displayWidth) + 'x' + str(self.displayHeight) + ' pixel values: ' + pixelValues)
 
@@ -73,16 +77,26 @@ class image_processor:
                         imgCopy[y][x] = n
         return imgCopy
 
-    def defaultConverter(self, imgTitle, k = 4):
+    def defaultConverter(self, imgTit = False, k = 4):
+        if imgTit is False:
+            imgTitle = self.getRandomImage()
+        else:
+            imgTitle = imgTit
         self._newImage(imgTitle)
         bw = ip._imageResizeBW()
         lowRes = ip._reduceColors(bw, k)
         remapped = ip._removeColors(lowRes)
         return remapped
 
+    def getRandomImage(self):
+        # outlined in test.py
+        pass
+
+
 if __name__ == '__main__':
     dispDim = (6, 6)
-    ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), dispDim)
+    directory = "DispPics"
+    ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), dispDim, directory)
     print(ip.defaultConverter('Ideas_Surprised_Pikachu_HD.jpg'))
     i = 1
     while True:
