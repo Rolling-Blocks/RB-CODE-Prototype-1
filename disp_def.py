@@ -11,6 +11,13 @@ class DispDef(Enum):
     # Lock Actuator States
     LOCK = auto()
     UNLOCK = auto()
+
+    # ACTUATION STAGES
+    ROWLOCK = auto()
+    ROWUNLOCK = auto()
+    COLRETURN = auto()
+    COLACTUATE = auto()
+
     # Block Actuators Canvas Side Location
     TOP = auto()
     BOTTOM = auto()
@@ -21,7 +28,7 @@ class DispDef(Enum):
     # Display Program
     RUN_CLOCK = auto()
     RUN_RANDIMG = auto()
-    
+
 
 def blockStateKey(state):
     num = -2

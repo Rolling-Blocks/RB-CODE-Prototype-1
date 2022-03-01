@@ -88,6 +88,12 @@ class animation:
         #print(diffArr)     
         return moveQue
 
+    def getGcode(self):
+        mq = self.makeMoveQue()
+        moves = [[ROWLOCK]]
+        for i in range(0, len(mq)):
+
+
     def printMq(self, mq):
         for m in range(0, len(mq)):
             print("Blocks: " + str(mq[m][0]) + " Locks: " + str(mq[m][1]))

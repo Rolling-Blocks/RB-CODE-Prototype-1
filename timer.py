@@ -1,40 +1,59 @@
 from zoneinfo import ZoneInfo, available_timezones
-from datetime import datetime, timedelta
+import datetime as dt
+from datetime import timedelta
+from pytz import timezone
 import time
 import copy
 
 
 class timer:
     def __init__(self):
-        self.then = copy.deepcopy(time.localtime())
+        now = dt.datetime.now()
+        self.tz = now.astimezone()
+        self.resetThen()
 
     def getThen(self):
         return self.then
 
+    def resetThen(self):
+        self.then = copy.deepcopy(dt.datetime.now())
+
     def beenSecond(self):
-        if self.then.tm_sec is time.localtime().tm_sec:
+        if self.getThen().second is dt.datetime.now().second:
             return False
         else:
-            self.then = copy.deepcopy(time.localtime())
+            self.resetThen()
             return True
     
     def beenMinute(self):
-        if self.then.tm_min is time.localtime().tm_min:
+        if self.getThen().minute is dt.datetime.now().minute:
             return False
         else:
-            self.then = copy.deepcopy(time.localtime())
+            self.resetThen()
             return True
     
     def beenHour(self):
-        if self.then.tm_hour is time.localtime().tm_hour:
+        if self.getThen().hour is dt.datetime.now().hour:
             return False
         else:
-            self.then = copy.deepcopy(time.localtime())
+            self.resetThen()
             return True
 
+    def beenX(self, x):
+        print(timedelta(self.then, dt.datetime.now()))
+        waitTill = self.then + \
+                timedelta(milliseconds = x)
+        now = dt.datetime.now()
+        if waitTill < now:
+            return False
+        else:
+            self.resetThen()
+            return True
+        
+
 if __name__ == '__main__':
-    dt = different_time()
+    t = timer()
 
     while True:
-        if dt.beenMinute():
-            print(dt.getThen().tm_min)
+        if t.beenX(750):
+            print(t.getX())
