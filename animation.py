@@ -5,6 +5,8 @@ import numpy as np
 import time
 import cv2
 import copy
+from disp_def import DispDef as DD 
+from disp_def import blockStateKey
 from statistics import mean, stdev
 
 from matplotlib import pyplot as plt
@@ -89,10 +91,80 @@ class animation:
         return moveQue
 
     def getGcode(self):
+        
         mq = self.makeMoveQue()
-        moves = [[ROWLOCK]]
-        for i in range(0, len(mq)):
+        moves = []
 
+        # Row Lock
+        rowReMove = DD.ROWLOCK
+        rowReActuateTo = [DD.LOCK] * self.dispHeight
+        moves.append([rowReMove, rowReActuateTo])
+
+        for i in range(0, len(mq)):
+            # Column Return
+            colRetMove = DD.COLRETURN
+            colRetActuateTo = []
+            for x in range(0, self.dispWidth): 
+                if not mq[i][0][x] == 2:
+                    colRetActuateTo.append(DD.MIDDLE)
+                else:
+                    colRetActuateTo.append(DD.SUBTRACT)
+            moves.append([colRetMove, colRetActuateTo])
+
+            # Row Unlocks
+            rowUnMove = DD.ROWUNLOCK
+            rowUnActuateTo = [DD.LOCK] * self.dispHeight
+            for x in range(0, len(mq[i][1])):
+                rowUnActuateTo[mq[i][1][x]] = DD.UNLOCK
+            moves.append([rowUnMove, rowUnActuateTo])
+
+            # Column Actuate
+            colRetMove = DD.COLACTUATE
+            colRetActuateTo = []
+            for x in range(0, len(mq[i][0])):
+                if mq[i][0][x] == -1:
+                    colRetActuateTo.append(DD.SUBTRACT)
+                if mq[i][0][x] == 0:
+                    colRetActuateTo.append(DD.MIDDLE)
+                if mq[i][0][x] == 1 or mq[i][0][x] == 2:
+                    colRetActuateTo.append(DD.ADD)
+            moves.append([colRetMove, colRetActuateTo])
+
+            # Row Lock
+            rowReMove = DD.ROWLOCK
+            rowReActuateTo = [DD.LOCK] * self.dispHeight
+            moves.append([rowReMove, rowReActuateTo])
+        return moves
+
+    def printGcode(self, gcode):
+        for i in range(0 , len(gcode)):
+            strang = ""
+            if gcode[i][0] is DD.ROWLOCK:
+                strang += "ROW LOCK"
+            if gcode[i][0] is DD.COLRETURN:
+                strang += "COL RETURN"
+            if gcode[i][0] is DD.ROWUNLOCK:
+                strang += "ROW UNLOCK"
+            if gcode[i][0] is DD.COLACTUATE:
+                strang += "COL ACTUATE"
+            print("")
+            print(strang)
+
+            strang = ""
+            for j in range(0, len(gcode[i][1])):
+                if not j == 0:
+                    strang += ", "
+                if gcode[i][1][j] == DD.LOCK:
+                    strang += "LOCK"
+                if gcode[i][1][j] == DD.UNLOCK:
+                    strang += "UNLK"
+                if gcode[i][1][j] == DD.SUBTRACT:
+                    strang += "SUB"
+                if gcode[i][1][j] == DD.MIDDLE:
+                    strang += "MID"
+                if gcode[i][1][j] == DD.ADD:
+                    strang += "ADD"
+            print(strang)
 
     def printMq(self, mq):
         for m in range(0, len(mq)):
@@ -110,15 +182,13 @@ if __name__ == '__main__':
     diff = a._findDifMat()
     ldRow = a._leastDifRow(diff)
 
-    #print("init")
-    #print(initState)
-    #print("des")
-    #print(desState)
     print("diff")
     print(diff)
 
     mq = a.makeMoveQue()
     a.printMq(mq)
+    gg = a.getGcode()
+    a.printGcode(gg)
 
     i = 1
     while True:

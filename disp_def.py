@@ -14,8 +14,8 @@ class DispDef(Enum):
 
     # ACTUATION STAGES
     ROWLOCK = auto()
-    ROWUNLOCK = auto()
     COLRETURN = auto()
+    ROWUNLOCK = auto()
     COLACTUATE = auto()
 
     # Block Actuators Canvas Side Location
