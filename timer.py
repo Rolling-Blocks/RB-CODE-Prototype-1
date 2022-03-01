@@ -39,12 +39,9 @@ class timer:
             self.resetThen()
             return True
 
-    def beenX(self, x):
-        print(timedelta(self.then, dt.datetime.now()))
-        waitTill = self.then + \
-                timedelta(milliseconds = x)
-        now = dt.datetime.now()
-        if waitTill < now:
+    def beenXmils(self, x):
+        waitTill = self.then + timedelta(milliseconds = x)
+        if waitTill > dt.datetime.now():
             return False
         else:
             self.resetThen()
@@ -55,5 +52,5 @@ if __name__ == '__main__':
     t = timer()
 
     while True:
-        if t.beenX(750):
-            print(t.getX())
+        if t.beenXmils(1750):
+            print(t.getThen())
