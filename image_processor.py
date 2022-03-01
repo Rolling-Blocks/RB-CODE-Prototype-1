@@ -101,7 +101,6 @@ class image_processor:
         print(rfile)
         self.imgTitle = rfile
 
-
 if __name__ == '__main__':
     dispDim = (6, 6)
     directory = "\DispPics"

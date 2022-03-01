@@ -4,7 +4,7 @@ import time
 import copy
 
 
-class different_time:
+class timer:
     def __init__(self):
         self.then = copy.deepcopy(time.localtime())
 

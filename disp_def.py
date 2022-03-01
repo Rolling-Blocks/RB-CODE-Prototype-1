@@ -18,6 +18,11 @@ class DispDef(Enum):
     LEFT = auto()
     RIGHT = auto()
 
+    # Display Program
+    RUN_CLOCK = auto()
+    RUN_RANDIMG = auto()
+    
+
 def blockStateKey(state):
     num = -2
     if state is DispDef.SUBTRACT:
