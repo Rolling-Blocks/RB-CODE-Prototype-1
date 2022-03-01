@@ -6,8 +6,7 @@ import time
 import cv2
 import copy
 from statistics import mean, stdev
-import os
-import random
+import os, random, sys
 
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
@@ -23,9 +22,12 @@ class image_processor:
 
         #print('processor extablished for ' + displayName + ' dimension: ' + str(self.displayWidth) + 'x' + str(self.displayHeight) + ' pixel values: ' + pixelValues)
 
-    def _newImage(self, image_title):
-        self.imgTitle = image_title
+    def newImage(self, image_title):
+        self.imgTitle = str(sys.path[0])+ '\DispPics' + str(image_title)
         print("imported Image Title = " + self.imgTitle + " ----- of type " + str(type(self.imgTitle)))
+
+    def getImageTitle(self):
+        return self.imgTitle
 
     def _displayRGB(self):
         r = self._imageResizeRGB()
@@ -79,25 +81,32 @@ class image_processor:
 
     def defaultConverter(self, imgTit = False, k = 4):
         if imgTit is False:
-            imgTitle = self.getRandomImage()
+            self.getRandomImage()
         else:
-            imgTitle = imgTit
-        self._newImage(imgTitle)
+            self.newImage(imgTit)
         bw = ip._imageResizeBW()
         lowRes = ip._reduceColors(bw, k)
         remapped = ip._removeColors(lowRes)
         return remapped
 
     def getRandomImage(self):
-        # outlined in test.py
-        pass
+        n=0
+        random.seed()
+        print(str(sys.path[0]) + self.image_folder)
+        for root, dirs, files in os.walk(str(sys.path[0]) + self.image_folder):
+            for name in files:
+                n += 1
+                if random.uniform(0, n) < 1:
+                    rfile=os.path.join(root, name)
+        print(rfile)
+        self.imgTitle = rfile
 
 
 if __name__ == '__main__':
     dispDim = (6, 6)
-    directory = "DispPics"
+    directory = "\DispPics"
     ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), dispDim, directory)
-    print(ip.defaultConverter('Ideas_Surprised_Pikachu_HD.jpg'))
+    print(ip.defaultConverter())
     i = 1
     while True:
         time.sleep(1)
