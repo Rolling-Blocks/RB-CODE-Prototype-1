@@ -1,6 +1,7 @@
 import time
 import random
-from disp_def import DispDef, blockStateKey
+from disp_def import blockStateKey
+from disp_def import DispDef as DD
 import animation as ani
 import image_processor as impr
 import display_virtual as disvir
@@ -13,8 +14,11 @@ a = ani.animation()
 ip = impr.image_processor(pixelVal, dispDim)
 disp = disvir.display_virtual(displayTit, dispDim, DispDef.TOP, DispDef.RIGHT, pixelVal)  
 
+currentRunningProgram = DD.RUN_RANDIMG
 while True:
-    
+    # Check Buttons
+
+    if 
     
 
 
