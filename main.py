@@ -16,17 +16,13 @@ disp = disvir.display_virtual(displayTit, dispDim, DispDef.TOP, DispDef.RIGHT, p
 
 currentRunningProgram = DD.RUN_RANDIMG
 while True:
-    # Check Buttons
+    # Check Buttons For Changing States
+    #check if different State Selected
 
-    if 
-    
+    if currentRunningProgram is DD.RUN_RANDIMG:
+        pass
+    if currentRunningProgram is DD.RUN_CLOCK
+        pass
 
-
-#compiles till here
-random.seed(45646481)
-index = 0
-
-
-while True:
 
 

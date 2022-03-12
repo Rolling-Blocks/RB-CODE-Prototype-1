@@ -119,16 +119,30 @@ class animation:
             moves.append([rowUnMove, rowUnActuateTo])
 
             # Column Actuate
-            colRetMove = DD.COLACTUATE
-            colRetActuateTo = []
+            colActMove = DD.COLACTUATE
+            # Odds
+            colActActuateTo = []
+            for x in range(0, len(mq[i][0])):
+                if x % 2 == 1:
+                    colActActuateTo.append(colRetActuateTo[x])
+                else:
+                    if mq[i][0][x] == -1:
+                        colActActuateTo.append(DD.SUBTRACT)
+                    if mq[i][0][x] == 0:
+                        colActActuateTo.append(DD.MIDDLE)
+                    if mq[i][0][x] == 1 or mq[i][0][x] == 2:
+                        colActActuateTo.append(DD.ADD)
+            moves.append([colActMove, colActActuateTo])
+            # Evens
+            colActActuateTo = []
             for x in range(0, len(mq[i][0])):
                 if mq[i][0][x] == -1:
-                    colRetActuateTo.append(DD.SUBTRACT)
+                    colActActuateTo.append(DD.SUBTRACT)
                 if mq[i][0][x] == 0:
-                    colRetActuateTo.append(DD.MIDDLE)
+                    colActActuateTo.append(DD.MIDDLE)
                 if mq[i][0][x] == 1 or mq[i][0][x] == 2:
-                    colRetActuateTo.append(DD.ADD)
-            moves.append([colRetMove, colRetActuateTo])
+                    colActActuateTo.append(DD.ADD)
+            moves.append([colActMove, colActActuateTo])
 
             # Row Lock
             rowReMove = DD.ROWLOCK
