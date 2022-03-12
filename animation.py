@@ -102,38 +102,23 @@ class animation:
 
         for i in range(0, len(mq)):
             # Column Return
-            colRetMove = DD.COLRETURN
             colRetActuateTo = []
             for x in range(0, self.dispWidth): 
                 if not mq[i][0][x] == 2:
                     colRetActuateTo.append(DD.MIDDLE)
                 else:
                     colRetActuateTo.append(DD.SUBTRACT)
-            moves.append([colRetMove, colRetActuateTo])
+            moves.append([DD.COLRETURN, colRetActuateTo])
 
             # Row Unlocks
-            rowUnMove = DD.ROWUNLOCK
             rowUnActuateTo = [DD.LOCK] * self.dispHeight
             for x in range(0, len(mq[i][1])):
                 rowUnActuateTo[mq[i][1][x]] = DD.UNLOCK
-            moves.append([rowUnMove, rowUnActuateTo])
+            moves.append([DD.ROWUNLOCK, rowUnActuateTo])
 
             # Column Actuate
-            colActMove = DD.COLACTUATE
-            # Odds
-            colActActuateTo = []
-            for x in range(0, len(mq[i][0])):
-                if x % 2 == 1:
-                    colActActuateTo.append(colRetActuateTo[x])
-                else:
-                    if mq[i][0][x] == -1:
-                        colActActuateTo.append(DD.SUBTRACT)
-                    if mq[i][0][x] == 0:
-                        colActActuateTo.append(DD.MIDDLE)
-                    if mq[i][0][x] == 1 or mq[i][0][x] == 2:
-                        colActActuateTo.append(DD.ADD)
-            moves.append([colActMove, colActActuateTo])
-            # Evens
+            # Produces 2 different moves. If adjacent columns move simultaneously, 
+            # they would interfere with one another and they would fail.
             colActActuateTo = []
             for x in range(0, len(mq[i][0])):
                 if mq[i][0][x] == -1:
@@ -142,8 +127,19 @@ class animation:
                     colActActuateTo.append(DD.MIDDLE)
                 if mq[i][0][x] == 1 or mq[i][0][x] == 2:
                     colActActuateTo.append(DD.ADD)
-            moves.append([colActMove, colActActuateTo])
+            
+            toSend = []
+            for x in range(0, len(mq[i][0])):
+                if x % 2 == 0:
+                    toSend.append(colActActuateTo[x])
+                else:
+                    toSend.append(colRetActuateTo[x])
 
+            # Moves Half the Columns
+            moves.append([DD.COLACTUATE, toSend])
+            # Moves the other half
+            moves.append([DD.COLACTUATE, colActActuateTo])
+        
             # Row Lock
             rowReMove = DD.ROWLOCK
             rowReActuateTo = [DD.LOCK] * self.dispHeight
