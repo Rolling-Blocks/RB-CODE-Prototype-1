@@ -22,7 +22,7 @@ class run_clock:
     def printNumber(self, w, h, number):
         num = self.__makeNumber(w, h, number)
         print(number)
-        self.__printBoolArr(num)
+        self.__printBoolArr(num)        
 
     def __makeNumber(self, w, h, number):
         numArray = np.full((h, w), False)
@@ -93,8 +93,8 @@ class run_clock:
         #print("Line Dimensions " + str(lh) + " : " + str(lw))
         for y in range(lh[0], lh[1] + 1):
             for x in range(lw[0], lw[1] + 1):
-                #print("(x " + str(x) + ", y " + str(y) + ")")
                 numArray[x][y] = True
+                #print("(x " + str(x) + ", y " + str(y) + ")")
         return numArray
 
     # Print 2d Boolean Array as 1s and 0s
