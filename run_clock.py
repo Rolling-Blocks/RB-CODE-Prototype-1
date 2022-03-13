@@ -19,7 +19,12 @@ class run_clock:
         currentTime = self.timmo.getThen()
         print(currentTime)
 
-    def makeNumber(self, w, h, number):
+    def printNumber(self, w, h, number):
+        num = self.__makeNumber(w, h, number)
+        print(number)
+        self.__printBoolArr(num)
+
+    def __makeNumber(self, w, h, number):
         numArray = np.full((h, w), False)
         linesToFill = self.__getSegments(number)
         #print(number)
@@ -34,9 +39,11 @@ class run_clock:
             #print()
         
         # Added Features To Font
-        if (h >= 6) and (number == 2):
+        if (h >= 6) and (h%2 == 0) and (number == 3):
+            numArray[h-2][0] = True
+        if (h >= 6) and (h%2 == 0) and (number == 2):
             numArray[h-2][w-1] = True
-        if (h >= 6) and (number == 5):
+        if (h >= 6) and (h%2 == 0) and (number == 5):
             numArray[h-2][0] = True
         if (h >= 5) and (number == 7):
             numArray[1][0] = True
@@ -91,14 +98,14 @@ class run_clock:
         return numArray
 
     # Print 2d Boolean Array as 1s and 0s
-    def printBoolArr(self, arr):
-        print()
+    def __printBoolArr(self, arr):
         numArray = np.full((h, w), 0)
         for x in range(0, w):
             for y in range(0, h):
-                if num[y][x]:
+                if arr[y][x]:
                     numArray[y][x] = 1
         print(numArray)
+        print()
 
 if __name__ == '__main__':
     tim = tim.timer()
@@ -106,8 +113,7 @@ if __name__ == '__main__':
     rc = run_clock(tim, ani)
 
     w = 3
-    h = 5
+    h = 8
     
     for i in range(-1, 10):
-        num = rc.makeNumber(w, h, i)
-        rc.printBoolArr(num)
+        rc.printNumber(w, h, i)
