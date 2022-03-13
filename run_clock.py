@@ -22,7 +22,7 @@ class run_clock:
     def printNumber(self, w, h, number):
         num = self.__makeNumber(w, h, number)
         print(number)
-        self.__printBoolArr(num)        
+        self.printBoolArr(num)        
 
     def __makeNumber(self, w, h, number):
         numArray = np.full((h, w), False)
@@ -98,7 +98,7 @@ class run_clock:
         return numArray
 
     # Print 2d Boolean Array as 1s and 0s
-    def __printBoolArr(self, arr):
+    def printBoolArr(self, arr):
         numArray = np.full((h, w), 0)
         for x in range(0, w):
             for y in range(0, h):

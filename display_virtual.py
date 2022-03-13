@@ -66,7 +66,7 @@ class display_virtual:
         self.wind.setFrameLocks(self.displayState, self.lockServoState, self.blockServoState)
 
 if __name__ == '__main__':
-    dispDimensions = (32, 16) # (width, height)
+    dispDimensions = (16, 16) # (width, height)
     pixelVal = ('#CD853F','#8B5A2B','#008080','#D8BFD8')
     displayTit = '6x9 test'
     disp = display_virtual(displayTit, dispDimensions, DispDef.TOP, DispDef.RIGHT, pixelVal)  
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     while True:
         x = random.randint(0,dispDimensions[0]-1)
         y = random.randint(0,dispDimensions[1]-1)
-        t = 0.02
+        t = 0.01
 
         disp.setLockServo(y, DispDef.UNLOCK)
         disp.updateDisp()

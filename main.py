@@ -18,10 +18,9 @@ currentRunningProgram = DD.RUN_RANDIMG
 while True:
     # Check Buttons For Changing States
     #check if different State Selected
-
     if currentRunningProgram is DD.RUN_RANDIMG:
         pass
-    if currentRunningProgram is DD.RUN_CLOCK
+    if currentRunningProgram is DD.RUN_CLOCK:
         pass
 
 
