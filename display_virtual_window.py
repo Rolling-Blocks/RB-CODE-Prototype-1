@@ -5,7 +5,15 @@ from PIL import ImageColor
 from copy import copy, deepcopy
 
 class display_virtual_window:
-    def __init__(self, displayTitle, dismDim, blockSide, lockSide, pixelColors, blockSideLength = 40, borderWidth = 30, servoDim = (30, 12)):
+    def __init__(   self, 
+                    displayTitle, 
+                    dismDim, 
+                    blockSide, 
+                    lockSide, 
+                    pixelColors, 
+                    blockSideLength = 40, 
+                    borderWidth = 30, 
+                    servoDim = (30, 12)):
         # numLockRow ~ Height of Diplay
         self.numLockRow = dismDim[1]
         # lockSide ~ left/right
@@ -89,7 +97,7 @@ class display_virtual_window:
         
         if self.blockSide is DispDef.BOTTOM:
             # BOTTOM
-            blockServo[1] =self.servoDim[1] * 2 + self.numLockRow * self.blockSideLength - self.servoDim[1]*3/2 
+            blockServo[1] = self.servoDim[1] * 2 + self.numLockRow * self.blockSideLength - self.servoDim[1]*3/2 
         
         blockServo[0] = xBlockOffset + (self.blockSideLength - self.servoDim[0])/2
         lockServo[1] = yBlockOffset + (self.blockSideLength - self.servoDim[0])/2
@@ -138,7 +146,11 @@ if __name__ == '__main__':
     dispDim = (5, 9) # (width, height)
     pixelVal = ('#CD853F','#8B5A2B','#008080','#D8BFD8')
     displayTit = '6x9 test'
-    window = display_virtual_window(displayTit, dispDim, DispDef.TOP, DispDef.RIGHT, pixelVal)  
+    window = display_virtual_window(displayTit, 
+                                    dispDim, 
+                                    DispDef.TOP, 
+                                    DispDef.RIGHT, 
+                                    pixelVal)  
     i = 1
     while True:
         time.sleep(1)
