@@ -43,12 +43,24 @@ class display_virtual_window:
         self.updateDisplay()
         return
 
-    def newFrame(self, displayState, lockState, blockStates):
+    def setFrameLocks(self, displayState, lockState, blockStates):
         self.displayState = displayState
         self.lockServoState = lockState
         self.blockServoState = blockStates
         self.updateDisplay()
 
+    def setFrame(self, displayState):
+        self.displayState = displayState
+        self.updateDisplay()
+
+    def setLocks(self, lockState, blockStates):
+        self.lockServoState = lockState
+        self.blockServoState = blockStates
+        self.updateDisplay()
+
+    # Makes Display Image
+        # Draws Actuator Positions
+        # Draws Block Positions
     def updateDisplay(self):
         self.canvas.delete("all")
         
@@ -64,22 +76,20 @@ class display_virtual_window:
             xBlockOffset += self.servoDim[1] * 2
             # LEFT
             lockServo[0] = self.servoDim[1]/2 
-        else:
+        if self.lockSide is DispDef.RIGHT:
             # RIGHT
             lockServo[0] = self.servoDim[1] * 2 + self.numBlockCol * self.blockSideLength - self.servoDim[1]*3/2 
-
         if self.blockSide is DispDef.TOP:
             # push display down, put servo bars on top
             yBlockOffset += self.servoDim[1] * 2
             # TOP
             blockServo[1] = self.servoDim[1]/2 
-        else:
+        if self.blockSide is DispDef.BOTTOM:
             # BOTTOM
             blockServo[1] =self.servoDim[1] * 2 + self.numLockRow * self.blockSideLength - self.servoDim[1]*3/2 
         
         blockServo[0] = xBlockOffset + (self.blockSideLength - self.servoDim[0])/2
         lockServo[1] = yBlockOffset + (self.blockSideLength - self.servoDim[0])/2
-
 
         for s in range(0,len(self.lockServoState)):
             if self.lockServoState[s] is DispDef.LOCK:
