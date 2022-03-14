@@ -17,7 +17,7 @@ class timer:
 
     def getHour(self):
         now = dt.datetime.now()
-        hour = now.hour
+        hour = (now.hour) % 12
         if hour == 0:
             hour = 12
         return hour

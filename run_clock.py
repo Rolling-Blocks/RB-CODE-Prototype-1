@@ -9,6 +9,7 @@ import image_processor as impr
 import display_virtual as disvir
 import timer as tim
 import numpy as np
+import copy
 
 class run_clock:
     def __init__(self, t, a):
@@ -19,17 +20,63 @@ class run_clock:
         currentTime = self.timmo.getThen()
         print(currentTime)
 
-    def printNumber(self, w, h, number):
+    def printDigit(self, w, h, number):
         num = self.__makeNumber(w, h, number)
-        print(number)
-        self.printBoolArr(num)        
+        self.printBoolArr(num)
+    
+    def __combineMatrices(self, one, two):
+        onetwo = [[0] * (len(one[0]) + len(two[0])) for i in range(len(one))]
+        #print("onetwo: ")
+        #print("")
+        for y in range(len(one)):
+            a = 0
+            for i in range(len(one[0])):
+                onetwo[y][a] = one[y][i]
+                a += 1
+            for i in range(len(two[0])):
+                onetwo[y][a] = two[y][i]
+                a += 1
+        print(onetwo)
+        return onetwo
+
+    def makeClockLayout(self, w, h, number):
+        nl = self.__numList(number)
+        # mark notates the location to add an extra vertical space 
+        mark = len(nl) - 2
+        toRet = [[]] * h 
+        #print("| nl ~ length ~ " + str(len(nl)) + " |     | nl is " + str(nl) + " |")
+        #print(toRet)
+        columnArray = np.full((h, 1), False)
+        for i in range(len(nl)):
+            #print("Number to add next: " + str(nl[i]))
+            nextNumberArray = self.__makeNumber(w,h,nl[i])
+            toRet = self.__combineMatrices(toRet, nextNumberArray)
+            #print(str(i) + " toReturn 1")
+            #print(toRet)
+            # Space Between Numbers
+            if not i == len(nl) - 1:
+                toRet = self.__combineMatrices(toRet, columnArray)
+            #print(toRet)
+            #print(str(i) + " toReturn 2")
+            # Additional Space for Between Hours and Minutes
+            if i == mark - 1:
+                toRet = self.__combineMatrices(toRet, columnArray)
+        return toRet
+
+    def __numList(self, number):
+        numList = []
+        while (0 < number):
+            a = int(number % 10)
+            number = (number - a) / 10 
+            numList.insert(0, a)
+        return numList
 
     def __makeNumber(self, w, h, number):
         numArray = np.full((h, w), False)
         linesToFill = self.__getSegments(number)
         #print(number)
         #print(linesToFill)
-        for index in range(0, len(linesToFill)):
+        for index in range(len(linesToFill)):
             #print("Segment Array")
             segmentNum = linesToFill[index]
             sd = self.__numToSegment(w, h, segmentNum)
@@ -99,11 +146,14 @@ class run_clock:
 
     # Print 2d Boolean Array as 1s and 0s
     def printBoolArr(self, arr):
+        w = len(arr[0])
+        h = len(arr)
         numArray = np.full((h, w), 0)
-        for x in range(0, w):
-            for y in range(0, h):
+        for x in range(w):
+            for y in range(h):
                 if arr[y][x]:
                     numArray[y][x] = 1
+        print("Printed Bool Array")
         print(numArray)
         print()
 
@@ -112,8 +162,21 @@ if __name__ == '__main__':
     ani = ani.animation(16, 16)
     rc = run_clock(tim, ani)
 
+    print()
+    print([[0] * 3]* 5)
+    print()
+
     w = 3
     h = 8
     
     for i in range(-1, 10):
-        rc.printNumber(w, h, i)
+        pass
+        #rc.printDigit(w, h, i)
+    number = 1135
+    digitalFace = rc.makeClockLayout(3, 8, 1135)
+    print("")
+    print("Booleans")
+    print(digitalFace)
+    print("Numbers")
+    rc.printBoolArr(digitalFace)
+
