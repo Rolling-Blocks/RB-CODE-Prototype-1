@@ -35,8 +35,10 @@ class run_clock:
         for i in range(len(arr[0])):
             for j in range(len(arr)):
                 #print("(x,y) (" + str(i + xx) + "," + str(j + yy) + ")")
-                blank[j + yy][i + xx] = arr[j][i]
-        return blank 
+                if (0 <= (j + yy)) and ((j + yy) < self.displayHeight): 
+                    if (0 < i + xx) and (i + xx < self.displayWidth):
+                        blank[j + yy][i + xx] = arr[j][i]
+        return blank
 
     # Used to cut falses off the left side of the array
     def __cutBloat(self, arr):
