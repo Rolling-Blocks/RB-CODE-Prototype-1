@@ -11,36 +11,55 @@ import numpy as np
 import copy
 
 class run_clock:
-    def __init__(self, t):
+    def __init__(self, t, dw = 16, dh = 16):
+        self.displayWidth = dw
+        self.displayHeight = dh
         self.timmo = t
 
-    def getClockGcode(self, blankBackground):
-        pass
-
-    def getClockArray(self, w = 3, h = 8, number = -1):
+    def getClockArray(self, lw = 3, lh = 8, number = -1):
         if number == -1:
             n = self.timmo.getNow()
         else:
             n = number
-        return self.__makeClockLayout(w, h, n)
+        digitalFace = self.__makeClockLayout(lw, lh, n)
+        self.printBoolArr(digitalFace)
+        toRet = self.addArray(digitalFace)
+        return toRet
+
+    def addArray(self, arr, x = -1, y = -1):
+        if x == -1 or y == -1:
+            xx = int((self.displayWidth - len(arr[0])) / 2)
+            yy = int((self.displayHeight - len(arr)) / 2)
+        blank = np.zeros((self.displayHeight, self.displayWidth))
+        for i in range(len(arr[0])):
+            for j in range(len(arr)):
+                print("(x,y) (" + str(i + xx) + "," + str(j + yy) + ")")
+                blank[j + yy][i + xx] = arr[j][i]
+        return blank 
 
     # Used to cut falses off the left side of the array
-    def cutBloat(self, array):
+    def __cutBloat(self, arr):
         go = True
         i = 0
         j = 0
-        upToColumnCut = -1
-        while go and (i < len(array[0])):
-            while go and (j < len(array)) 
-                if array[j][i]: 
+        upToColumnCut = 0
+        #print("(w,h) (" + str(len(arr[0])) + "," + str(len(arr)) + ")")
+        while (go and (i < len(arr[0]))):
+            for j in range(len(arr)): 
+                if arr[j][i]: 
                     go = False
-                j += 1
             # If Column Completely False Cut Column
             if go:
-                upToColumnCut = i
+                upToColumnCut += 1
             i += 1
         
         # Cut Up To Column i
+        ##### #####
+        toRet = [[0] * (len(arr[0]) - upToColumnCut) for i in range(len(arr))]
+        for j in range(len(toRet)):
+            for i in range(len(toRet[0])):
+                toRet[j][i] = arr[j][i + upToColumnCut]
+        return toRet
 
     def printDigit(self, w, h, number):
         num = self.__makeNumber(w, h, number)
@@ -63,7 +82,7 @@ class run_clock:
                 toRet = self.__combineMatrices(toRet, columnArray)
             if i == mark - 1:
                 toRet = self.__combineMatrices(toRet, columnArray)
-        return toRet
+        return self.__cutBloat(toRet)
 
     def __combineMatrices(self, one, two):
         onetwo = [[0] * (len(one[0]) + len(two[0])) for i in range(len(one))]
@@ -173,14 +192,19 @@ if __name__ == '__main__':
     rc = run_clock(tim)
 
     w = 3
-    h = 8
+    h = 12
     
     for i in range(-1, 10):
         pass
         #rc.printDigit(w, h, i)
-    number = -1
+    
+    number = 1243
+
+    digitalFace = rc.getClockArray(w, h, number)
+    rc.printBoolArr(digitalFace)
+
     while True:
         if tim.beenMinute():
-            digitalFace = rc.getClockArray(w, h, number)
+            digitalFace = rc.getClockArray(w, h, -1)
             rc.printBoolArr(digitalFace)
 
