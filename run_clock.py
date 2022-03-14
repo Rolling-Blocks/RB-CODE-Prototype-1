@@ -26,6 +26,7 @@ class run_clock:
         toRet = self.addArray(digitalFace)
         return toRet
 
+    # Add Array Puts the image on an empty display with the top left corner of the clock face and the clock face as inputs
     def addArray(self, arr, x = -1, y = -1):
         if x == -1 or y == -1:
             xx = int((self.displayWidth - len(arr[0])) / 2)
@@ -33,7 +34,7 @@ class run_clock:
         blank = np.zeros((self.displayHeight, self.displayWidth))
         for i in range(len(arr[0])):
             for j in range(len(arr)):
-                print("(x,y) (" + str(i + xx) + "," + str(j + yy) + ")")
+                #print("(x,y) (" + str(i + xx) + "," + str(j + yy) + ")")
                 blank[j + yy][i + xx] = arr[j][i]
         return blank 
 
@@ -183,7 +184,8 @@ class run_clock:
             for y in range(h):
                 if arr[y][x]:
                     numArray[y][x] = 1
-        print("Printed Bool Array")
+        print()
+        #print("Printed Bool Array")
         print(numArray)
         print()
 
@@ -194,17 +196,11 @@ if __name__ == '__main__':
     w = 3
     h = 12
     
-    for i in range(-1, 10):
-        pass
-        #rc.printDigit(w, h, i)
-    
-    number = 1243
-
-    digitalFace = rc.getClockArray(w, h, number)
+    digitalFace = rc.getClockArray(w, h, -1)
     rc.printBoolArr(digitalFace)
 
     while True:
         if tim.beenMinute():
+            #print(tim.getNow())
             digitalFace = rc.getClockArray(w, h, -1)
             rc.printBoolArr(digitalFace)
-
