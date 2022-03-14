@@ -24,6 +24,24 @@ class run_clock:
             n = number
         return self.__makeClockLayout(w, h, n)
 
+    # Used to cut falses off the left side of the array
+    def cutBloat(self, array):
+        go = True
+        i = 0
+        j = 0
+        upToColumnCut = -1
+        while go and (i < len(array[0])):
+            while go and (j < len(array)) 
+                if array[j][i]: 
+                    go = False
+                j += 1
+            # If Column Completely False Cut Column
+            if go:
+                upToColumnCut = i
+            i += 1
+        
+        # Cut Up To Column i
+
     def printDigit(self, w, h, number):
         num = self.__makeNumber(w, h, number)
         self.printBoolArr(num)
