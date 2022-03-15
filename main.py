@@ -48,6 +48,7 @@ while True:
     ## Run Random Image Every Hour
     if imageState is DD.IMG_RAND and tImage.beenHour():
         change = True
+        # Reduces k means clustering values by one if the clock is running
         if clockState is DD.CLC_NO:
             imageLayer = ip.defaultConverter(k = len(pixelVal))
         else:
@@ -56,6 +57,7 @@ while True:
     ## Run One Image
     if imageState is DD.IMG_STATIC:
         change = True
+        # Reduces k means clustering values by one if the clock is running
         if clockState is DD.CLC_NO:
             imageLayer = ip.defaultConverter(k = len(pixelVal))
         else:
@@ -75,5 +77,6 @@ while True:
 
     if changed == True:
         changed = False
+        # Stack Layers
         
 
