@@ -1,5 +1,6 @@
 # Helps with generic remapping of array elements
 import copy
+import numpy as np
 
 class array_manipulator:
     def __init__(self):
@@ -8,8 +9,6 @@ class array_manipulator:
     ## Swap Number
         # Takes in array 'arr' and replace all instances of 'a' with 'b'.
     def swapNumber(self, arr, a, b):
-        if not len(arr) == len(boolArr) or not (len(arr[0]) == len(boolArr[0])):
-            raise NamError('arrays given not the same dimensions') 
         arrCop = copy.deepcopy(arr)
         for j in range(len(arr)):
             for i in range(len(arr[0])):
@@ -30,4 +29,28 @@ class array_manipulator:
                     arrCop[j][i] = a
         return arrCop
 
+    ## Increment By
+        # Takes all elements of 'arr' greater than 'a' and less then 'b'
+    def incrementArrBy(self, arr, a, b, modBy = -1):
+        arrCop = copy.deepcopy(arr)
+        for j in range(len(arr)):
+            for i in range(len(arr[0])):
+                if a <= arr[j][i] and arr[j][i] <= b:
+                    if modBy == -1:
+                        arrCop[j][i] = (arrCop[j][i] + 1) % (b + 1)
+                    if not modBy == -1:
+                        arrCop[j][i] = (arrCop[j][i] + 1) % modBy
+        return arrCop
+
+
 if __name__ == '__main__':
+    am = array_manipulator()
+    dispDim = (10,6)
+    init =  np.random.randint(0, 6, size=dispDim)
+    print(init)
+    b = [True, False, False]
+    boolArr = np.random.choice(b, size=dispDim)
+    #print(boolArr)
+    #print(am.swapNumber(init, 2, 3))
+    #print(am.boolMap(init, boolArr, -1))
+    print(am.incrementArrBy(init, 4, 5))
