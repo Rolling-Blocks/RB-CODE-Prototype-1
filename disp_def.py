@@ -4,33 +4,37 @@ from enum import Enum, auto
 
 class DispDef(Enum):
     #print(Enum.__file__)  
+    
     # Block Actuator States
-    SUBTRACT = -1
-    MIDDLE = 0
-    ADD = 1
+    SUBTRACT    = -1
+    MIDDLE      =  0
+    ADD         =  1
+
     # Lock Actuator States
-    LOCK = auto()
-    UNLOCK = auto()
+    LOCK        = auto()
+    UNLOCK      = auto()
 
     # ACTUATION STAGES
-    ROWLOCK = auto()
-    COLRETURN = auto()
-    ROWUNLOCK = auto()
-    COLACTUATE = auto()
+    ROWLOCK     = auto()
+    COLRETURN   = auto()
+    ROWUNLOCK   = auto()
+    COLACTUATE  = auto()
 
-    # Block Actuators Canvas Side Location
-    TOP = auto()
-    BOTTOM = auto()
-    # Lock Actuators Canvas Side Location
-    LEFT = auto()
-    RIGHT = auto()
+    ## Actuators Canvas Side Location
+        ## Block
+    TOP         = auto()
+    BOTTOM      = auto()
+        ## Lock 
+    LEFT        = auto()
+    RIGHT       = auto()
 
-    ## Image States
+    ## States
+        ## Image
     IMG_NULL    = auto()
     IMG_NO      = auto()
     IMG_RAND    = auto()
     IMG_STATIC  = auto()
-    ## Clock States
+        ## Clock
     CLC_NULL    = auto()
     CLC_NO      = auto()
     CLC_RUN     = auto()
