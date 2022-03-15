@@ -102,10 +102,10 @@ class image_processor:
         self.imgTitle = rfile
 
 if __name__ == '__main__':
-    dispDim = (6, 6)
+    dispDim = (16, 16)
     directory = "\DispPics"
     ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), dispDim, directory)
-    print(ip.defaultConverter())
+    print(ip.defaultConverter(k = 3))
     i = 1
     while True:
         time.sleep(1)

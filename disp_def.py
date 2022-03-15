@@ -25,9 +25,15 @@ class DispDef(Enum):
     LEFT = auto()
     RIGHT = auto()
 
-    # Display Program
-    RUN_CLOCK = auto()
-    RUN_RANDIMG = auto()
+    ## Image States
+    IMG_NULL    = auto()
+    IMG_NO      = auto()
+    IMG_RAND    = auto()
+    IMG_STATIC  = auto()
+    ## Clock States
+    CLC_NULL    = auto()
+    CLC_NO      = auto()
+    CLC_RUN     = auto()
 
 
 def blockStateKey(state):
