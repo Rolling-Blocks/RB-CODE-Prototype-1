@@ -29,6 +29,17 @@ class array_manipulator:
                     arrCop[j][i] = a
         return arrCop
 
+    def addArray(self, arr1, arr2, modBy = -1):
+        if not len(arr1) == len(arr2) or not (len(arr1[0]) == len(arr2[0])):
+            raise NamError('arrays given not the same dimensions') 
+        arrBlank = np.zeros((len(arr1), len(arr1[0])))
+        for j in range(len(arrBlank)):
+            for i in range(len(arrBlank[0])):
+                arrCop[j][i] = arr1[j][i] + arr2[j][i]
+                if not modBy == -1:
+                    arrCop[j][i] = arrCop[j][i] % modBy
+        return arrCop
+
     ## Increment By
         # Takes all elements of 'arr' greater than 'a' and less then 'b'
     def incrementArrBy(self, arr, a, b, modBy = -1):
@@ -41,6 +52,7 @@ class array_manipulator:
                     if not modBy == -1:
                         arrCop[j][i] = (arrCop[j][i] + 1) % modBy
         return arrCop
+
 
 
 if __name__ == '__main__':
