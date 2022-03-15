@@ -11,9 +11,9 @@ import numpy as np
 import copy
 
 class run_clock:
-    def __init__(self, t, dw = 16, dh = 16):
-        self.displayWidth = dw
-        self.displayHeight = dh
+    def __init__(self, t, dispDim):
+        self.displayWidth = dispDim[0]
+        self.displayHeight = dispDim[1]
         self.timmo = t
 
     def getClockArray(self, lw = 3, lh = 8, number = -1):
@@ -22,7 +22,7 @@ class run_clock:
         else:
             n = number
         digitalFace = self.__makeClockLayout(lw, lh, n)
-        self.printBoolArr(digitalFace)
+        #self.printBoolArr(digitalFace)
         toRet = self.addArray(digitalFace)
         return toRet
 
@@ -142,7 +142,7 @@ class run_clock:
             6: (0, 1, 3, 4, 5, 6),
             7: (0, 2, 5),
             8: (0, 1, 2, 3, 4, 5, 6),
-            9: (0, 1, 2, 3, 5)
+            9: (0, 1, 2, 3, 5, 6)
         }
         return numMap[num]
 
@@ -193,12 +193,12 @@ class run_clock:
 
 if __name__ == '__main__':
     tim = tim.timer()
-    rc = run_clock(tim)
+    rc = run_clock(tim, (16, 16))
 
     w = 3
     h = 12
     
-    digitalFace = rc.getClockArray(w, h, -1)
+    digitalFace = rc.getClockArray(w, h, 1269)
     rc.printBoolArr(digitalFace)
 
     while True:
