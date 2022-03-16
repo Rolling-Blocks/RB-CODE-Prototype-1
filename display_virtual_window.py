@@ -105,8 +105,11 @@ class display_virtual_window:
         for s in range(0,len(self.lockServoState)):
             if self.lockServoState[s] is DispDef.LOCK:
                 f = 'red'
-            if self.lockServoState[s] is DispDef.UNLOCK:
+            elif self.lockServoState[s] is DispDef.UNLOCK:
                 f = 'green'
+            else:
+                f = 'black'
+                print("Black " + str())
             self.canvas.create_rectangle(
                 lockServo[0], 
                 lockServo[1] + s * self.blockSideLength, 
