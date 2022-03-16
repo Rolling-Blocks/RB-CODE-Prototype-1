@@ -12,8 +12,9 @@ import timer as t
 import run_clock as rc
 
 ### Setups Parameters
-dispDim = (32, 32) # (width, height)
-pixelVal = ('#D6D58E','#DBF227','#9FC131','#034159')
+dispDim = (16, 16) # (width, height)
+pixelVal = ('#E1523D','#ED8B16','#C2BB00','#003547')
+pixelVal = ('#545454', '#1F1F1F', '#0D0D0D', '#FFFFFF')
 ## Times for each move (ROWLOCK, COLRETURN, ROWUNLOCK, COLACTUATE) in ms
 timesForMoves = {DD.ROWLOCK: 200, DD.COLRETURN: 200, DD.ROWUNLOCK: 200, DD.COLACTUATE: 200}
 displayTit = '6x9 test'
@@ -34,7 +35,7 @@ imageDefaultPixel = 0
 imageLayer = np.full(dispDim, imageDefaultPixel)
 
 # Clock Specifiers
-clockState = DD.CLC_RUN
+clockState = DD.CLC_NO
 clockDefaultPixel = 3
 clockLayer = np.full(dispDim, False)
 
