@@ -14,3 +14,5 @@
 
 ### Re-Zeroing
 #### I will write out the mechanical novelties of this design on my blog Zekebuild.com when the project is complete.
+
+### First Full Working Simulation 3/16 4:00am
