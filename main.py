@@ -12,12 +12,12 @@ import timer as t
 import run_clock as rc
 
 ### Setups Parameters
-dispDim = (16, 16) # (width, height)
-pixelVal = ('#CD853F','#8B5A2B','#008080','#D8BFD8')
+dispDim = (32, 32) # (width, height)
+pixelVal = ('#D6D58E','#DBF227','#9FC131','#034159')
 ## Times for each move (ROWLOCK, COLRETURN, ROWUNLOCK, COLACTUATE) in ms
-timesForMoves = {DD.ROWLOCK: 500, DD.COLRETURN: 1000, DD.ROWUNLOCK: 500, DD.COLACTUATE: 1000}
+timesForMoves = {DD.ROWLOCK: 200, DD.COLRETURN: 200, DD.ROWUNLOCK: 200, DD.COLACTUATE: 200}
 displayTit = '6x9 test'
-a = ani.animation()
+a = ani.animation(dispDim)
 am = arrMap.array_manipulator()
 directory = "\DispPics"
 ip = impr.image_processor(pixelVal, dispDim, directory)
@@ -29,13 +29,13 @@ disp = disvir.display_virtual(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal, t
 #dispWind = dvw.display_virtual_window(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal)
 
 # Image Specifiers
-imageState = DD.IMG_NO
+imageState = DD.IMG_RAND
 imageDefaultPixel = 0
 imageLayer = np.full(dispDim, imageDefaultPixel)
 
 # Clock Specifiers
 clockState = DD.CLC_RUN
-clockDefaultPixel = 2
+clockDefaultPixel = 3
 clockLayer = np.full(dispDim, False)
 
 # Gcode
@@ -45,9 +45,10 @@ buffer = 500
 # State Manager
 changed = False
 
+firstTimeRunThrough = True
+
 while True:
     # Check Buttons For Changing States
-    
     if not len(gcode) == 0 and tGcode.beenXmils(buffer):
         popped = gcode.pop(0)
         buffer = disp.sendGcode(popped)
@@ -62,20 +63,24 @@ while True:
             print("IMG_NO")
             
         ## Run Random Image Every Hour
-        if imageState is DD.IMG_RAND and tImage.beenHour():
+        if imageState is DD.IMG_RAND and (firstTimeRunThrough or tImage.beenHour()):
+            firstTimeRunThrough = False
             changed = True
             # Reduces k means clustering values by one if the clock is running
-            if clockState is DD.CLC_NO:
+            if clockState is DD.CLC_NO or clockState is DD.CLC_NULL:
                 imageLayer = ip.defaultConverter(k = len(pixelVal))
+                print("K means " + str(len(pixelVal)))
             else:
                 imageLayer = ip.defaultConverter(k = len(pixelVal) - 1)
+                print("K means " + str(len(pixelVal) - 1))
+            print(imageLayer)
             print("IMG_RAND")
 
         ## Run One Image
         if imageState is DD.IMG_STATIC:
             changed = True
             # Reduces k means clustering values by one if the clock is running
-            if clockState is DD.CLC_NO:
+            if clockState is DD.CLC_NO or clockState is DD.CLC_NULL:
                 imageLayer = ip.defaultConverter(k = len(pixelVal))
             else:
                 imageLayer = ip.defaultConverter(k = len(pixelVal) - 1)
@@ -86,6 +91,7 @@ while True:
         if clockState is DD.CLC_NO:
             changed = True
             clockLayer = np.full(dispDim, False)
+            clockState = DD.CLC_NULL
             print("CLC_NO")
 
         ## Run Clock
@@ -101,7 +107,7 @@ while True:
         # Stack Layers
         composite = np.zeros(dispDim)
         # Turn clockLayer from bool to appropriate ints array
-        if clockState is DD.CLC_NO:
+        if clockState is DD.CLC_NO or clockState is DD.CLC_NULL:
             print("Just Image Layer")
             composite = imageLayer
         else:

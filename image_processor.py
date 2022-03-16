@@ -84,9 +84,9 @@ class image_processor:
             self.getRandomImage()
         else:
             self.newImage(imgTit)
-        bw = ip._imageResizeBW()
-        lowRes = ip._reduceColors(bw, k)
-        remapped = ip._removeColors(lowRes)
+        bw = self._imageResizeBW()
+        lowRes = self._reduceColors(bw, k)
+        remapped = self._removeColors(lowRes)
         return remapped
 
     def getRandomImage(self):

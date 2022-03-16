@@ -13,10 +13,10 @@ from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 
 class animation:
-    def __init__(self, displayWidth = 16, displayHeight = 16):
+    def __init__(self, displayDimensions):
         # Final Image Dimensions and Colors
-        self.dispWidth = displayWidth
-        self.dispHeight = displayHeight
+        self.dispWidth = displayDimensions[0]
+        self.dispHeight = displayDimensions[1]
         self.initialState = 0
         self.desiredState = 0
         self.difference = 0
@@ -182,8 +182,8 @@ class animation:
                 
 if __name__ == '__main__':
     w = 16
-    h = 16
-    a = animation(w, h)
+    h = 32
+    a = animation((w, h))
 
     initState = np.random.randint(0,4, size=(h,w))
     a.setInitialState(initState)
