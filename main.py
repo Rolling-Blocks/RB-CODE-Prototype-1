@@ -35,7 +35,7 @@ imageDefaultPixel = 0
 imageLayer = np.full(dispDim, imageDefaultPixel)
 
 # Clock Specifiers
-clockState = DD.CLC_NO
+clockState = DD.CLC_RUN
 clockDefaultPixel = 3
 clockLayer = np.full(dispDim, False)
 

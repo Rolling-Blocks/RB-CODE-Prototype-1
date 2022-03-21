@@ -39,6 +39,10 @@ class DispDef(Enum):
     CLC_NO      = auto()
     CLC_RUN     = auto()
 
+    # Servo_Types
+    LOCK_SERVO = auto()
+    BLOCK_SERVO = auto()
+
 
 def blockStateKey(state):
     num = -2
