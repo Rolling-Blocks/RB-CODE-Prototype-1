@@ -5,6 +5,10 @@ from enum import Enum, auto
 class DispDef(Enum):
     #print(Enum.__file__)  
     
+    # Servo_Types
+    LOCK_SERVO = auto()
+    BLOCK_SERVO = auto()
+
     # Block Actuator States
     SUBTRACT    = -1
     MIDDLE      =  0
@@ -38,10 +42,6 @@ class DispDef(Enum):
     CLC_NULL    = auto()
     CLC_NO      = auto()
     CLC_RUN     = auto()
-
-    # Servo_Types
-    LOCK_SERVO = auto()
-    BLOCK_SERVO = auto()
 
 
 def blockStateKey(state):
