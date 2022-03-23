@@ -3,11 +3,12 @@ import time
 from disp_def import DispDef as DD
 from disp_def import blockStateKey
 import copy
+import json
 
 defaultTimesPerMove = {DD.ROWLOCK: 750, DD.COLRETURN: 1000, DD.ROWUNLOCK: 750, DD.COLACTUATE: 1000}
 
 class display_real:
-    def __init__(self, displayTitle, dispDim, blockSide = DD.TOP, lockSide = DD.RIGHT, pixelColors, timePerMove = defaultTimesPerMove):
+    def __init__(self, displayTitle, dispDim, blockSide = DD.TOP, lockSide = DD.RIGHT, pixelColors, dispServoData = 'display_16x16.json', timePerMove = defaultTimesPerMove):
         
         # numLockRow ~ Height of Diplay
         self.numLockRow = dispDim[1]
@@ -21,6 +22,8 @@ class display_real:
         self.pixelColors = pixelColors
         # timePerMove is the time buffer corresponding to each time delay
         self.timePerMove = timePerMove
+        # display Servo Data, Contains Offset
+        self.dispServoData = dispServoData
 
         # state of virtual display stored as cube positions 0-3, position corresponds to color in location in pixelcolors
         self.displayState = [[0]*self.numBlockCol for i in range(self.numLockRow)]
@@ -62,7 +65,7 @@ class display_real:
         if not self.__getServoSendTo_InputChecker(self, servoType, servoCoordinate, servoSetPos):
             return False
 
-        
+        ## get servo data
 
     def __getServoSendTo_InputChecker(self, servoType, servoCoordinate, servoSetPos):
         # Checks for __getServoSendTo()
