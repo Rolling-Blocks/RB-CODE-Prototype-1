@@ -31,6 +31,9 @@ class display_real:
         # display viewer setup
         self.blockServoState = [DD.MIDDLE]*self.numBlockCol
 
+        # Classify JSON into dict
+        ## beans
+
     def getPixelKey(self):
         return self.pixelColors
 
@@ -49,7 +52,7 @@ class display_real:
     def getLockServoPos(self, row):
         return self.lockServoState[row]
 
-    def __getServoSendTo(self, servoType = DD.LOCK, servoCoordinate = 0, servoSetPos):
+    def __getServoSendTo(self, servoType = DD.LOCK_SERVO, servoCoordinate = 0, servoSetPos):
         # Takes 
             # Lock or Block, 
             # Servo Coordinate location is 
@@ -58,39 +61,42 @@ class display_real:
         # Handles Offset of Where Servos Should 
         if not self.__getServoSendTo_InputChecker(self, servoType, servoCoordinate, servoSetPos):
             return False
-            
+
+        
 
     def __getServoSendTo_InputChecker(self, servoType, servoCoordinate, servoSetPos):
-         # Checks for __getServoSendTo()
-        if servoType is not DD.LOCK and servoType is not DD.BLOCK:
+        # Checks for __getServoSendTo()
+        if servoType is not DD.LOCK_SERVO and servoType is not DD.BLOCK_SERVO:
             print("'__getServoSendTo()' not given valid 'servoType' ")
             return False
 
-        if servoType is DD.LOCK:
+        # Check BLOCK_SERVO is valid
+        if servoType is DD.BLOCK_SERVO:
             # Check Valid 'servoCoordinate'
-            if not (0 <= servoCoordinate) or not (servoCoordinate < self.numLockRow):
-                print("'servoCoordinate' for row is our of bounds")
-                return False
-            if not (servoSetPos is DD.SUBTRACT or servoSetPos is DD.MIDDLE or servoSetPos is DD.ADD):
-                print("'servoSetPos' state is not valid")
-                return False
-            
-        if servoType is DD.LOCK:
-            # Check Valid 'servoCoordinate'
-            if not (0 <= servoCoordinate) or not (servoCoordinate < self.numLockRow):
+            if not (0 <= servoCoordinate) or not (servoCoordinate < self.numBlockCol):
                 print("'servoCoordinate' for row is our of bounds")
                 return False
             if not (servoSetPos is DD.SUBTRACT or servoSetPos is DD.MIDDLE or servoSetPos is DD.ADD):
                 print("'servoSetPos' state is not valid")
                 return False
 
+        # Check LOCK_SERVO is valid    
+        if servoType is DD.LOCK_SERVO:
+            # Check Valid 'servoCoordinate'
+            if not (0 <= servoCoordinate) or not (servoCoordinate < self.numLockRow):
+                print("'servoCoordinate' for row is our of bounds")
+                return False
+            if not (servoSetPos is DD.LOCK or servoSetPos is DD.UNLOCK):
+                print("'servoSetPos' state is not valid")
+                return False
+
+        # Everything is Valid
         return True
 
     def setLockServo(self, row, state, timeForMove = 1.000):
         self.lockServoState[row] = state
         return timeForMove
-
-      
+   
     def setBlockServo(self, column, state):
         #print('initial: ' + str(blockStateKey(self.blockServoState[column])) + '  final' + str(blockStateKey(state)))
         columnChange = blockStateKey(state) - blockStateKey(self.blockServoState[column])

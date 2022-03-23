@@ -26,7 +26,7 @@ tImage = t.timer()
 tClock = t.timer()
 tGcode = t.timer()
 clockP = rc.run_clock(tClock, dispDim)
-disp = disvir.display_virtual(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal, timesForMoves)  
+dispSim = disvir.display_virtual(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal, timesForMoves)  
 #dispWind = dvw.display_virtual_window(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal)
 
 # Image Specifiers
@@ -52,7 +52,7 @@ while True:
     # Check Buttons For Changing States
     if not len(gcode) == 0 and tGcode.beenXmils(buffer):
         popped = gcode.pop(0)
-        buffer = disp.sendGcode(popped)
+        buffer = dispSim.sendGcode(popped)
         print("Sent Gcode Line, " + str(len(gcode)) + " line left.")
 
     else:
@@ -116,7 +116,7 @@ while True:
             composite = am.incrementArrBy(imageLayer, clockDefaultPixel, len(pixelVal))
             composite = am.boolMap(composite, clockLayer, clockDefaultPixel)
         ## Get Display Current state and composite and get animation and send it to gcode
-        a.setInitialState(disp.getDisplayState())
+        a.setInitialState(dispSim.getDisplayState())
         a.setDesiredState(composite)
         print("Making Gcode")
         gcode = a.getGcode()
