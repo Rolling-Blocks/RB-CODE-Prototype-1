@@ -1,16 +1,7 @@
-import skimage
-from skimage import color
-from skimage import io
 import numpy as np
 import time
-import cv2
 import copy
 from disp_def import DispDef as DD 
-from disp_def import blockStateKey
-from statistics import mean, stdev
-
-from matplotlib import pyplot as plt
-import matplotlib.image as mpimg
 
 class animation:
     def __init__(self, displayDimensions):

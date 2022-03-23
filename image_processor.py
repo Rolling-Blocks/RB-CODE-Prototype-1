@@ -1,9 +1,5 @@
 import numpy as np
-import time
-import cv2
-import copy
-from statistics import mean, stdev
-import os, random, sys
+import time, cv2, copy, os, random, sys
 
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
