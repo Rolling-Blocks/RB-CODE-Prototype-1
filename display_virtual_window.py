@@ -1,8 +1,7 @@
 import tkinter
-from disp_def import DispDef, blockStateKey
+from disp_def import DispDef as DD
+from disp_def import blockStateKey
 import time
-from PIL import ImageColor
-from copy import copy, deepcopy
 
 class display_virtual_window:
     def __init__(   self, 
@@ -32,10 +31,10 @@ class display_virtual_window:
         self.displayState = [[0]*self.numBlockCol for i in range(self.numLockRow)]
         
         #states of locks unlocked/locked
-        self.lockServoState = [DispDef.UNLOCK]*self.numLockRow
+        self.lockServoState = [DD.UNLOCK]*self.numLockRow
 
         # display viewer setup
-        self.blockServoState = [DispDef.MIDDLE]*self.numBlockCol
+        self.blockServoState = [DD.MIDDLE]*self.numBlockCol
 
         self.blockSideLength = blockSideLength
         self.borderWidth = borderWidth
@@ -79,23 +78,23 @@ class display_virtual_window:
         lockServo = [0, 0]
         blockServo = [0, 0]
 
-        if self.lockSide is DispDef.LEFT:
+        if self.lockSide is DD.LEFT:
             # push display down, put servo bars on top
             xBlockOffset += self.servoDim[1] * 2
             # LEFT
             lockServo[0] = self.servoDim[1]/2 
 
-        if self.lockSide is DispDef.RIGHT:
+        if self.lockSide is DD.RIGHT:
             # RIGHT
             lockServo[0] = self.servoDim[1] * 2 + self.numBlockCol * self.blockSideLength - self.servoDim[1]*3/2 
         
-        if self.blockSide is DispDef.TOP:
+        if self.blockSide is DD.TOP:
             # push display down, put servo bars on top
             yBlockOffset += self.servoDim[1] * 2
             # TOP
             blockServo[1] = self.servoDim[1]/2 
         
-        if self.blockSide is DispDef.BOTTOM:
+        if self.blockSide is DD.BOTTOM:
             # BOTTOM
             blockServo[1] = self.servoDim[1] * 2 + self.numLockRow * self.blockSideLength - self.servoDim[1]*3/2 
         
@@ -103,9 +102,9 @@ class display_virtual_window:
         lockServo[1] = yBlockOffset + (self.blockSideLength - self.servoDim[0])/2
 
         for s in range(0,len(self.lockServoState)):
-            if self.lockServoState[s] is DispDef.LOCK:
+            if self.lockServoState[s] is DD.LOCK:
                 f = 'red'
-            elif self.lockServoState[s] is DispDef.UNLOCK:
+            elif self.lockServoState[s] is DD.UNLOCK:
                 f = 'green'
             else:
                 f = 'black'
@@ -151,8 +150,8 @@ if __name__ == '__main__':
     displayTit = '6x9 test'
     window = display_virtual_window(displayTit, 
                                     dispDim, 
-                                    DispDef.TOP, 
-                                    DispDef.RIGHT, 
+                                    DD.TOP, 
+                                    DD.RIGHT, 
                                     pixelVal)  
     i = 1
     while True:

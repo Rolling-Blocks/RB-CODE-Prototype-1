@@ -1,6 +1,3 @@
-import time
-import random
-from disp_def import blockStateKey
 from disp_def import DispDef as DD
 import numpy as np
 import animation as ani
