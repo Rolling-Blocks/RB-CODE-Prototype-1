@@ -65,6 +65,9 @@ class display_real:
 
         return self.dispServoData[index][info]
 
+    # Returns
+        # Your Mom
+        # Servo Set Position
     def __getServoSendTo(self, servoType = DD.LOCK_SERVO, servoCoordinate = 0, servoSetPos):
         # Takes 
             # Lock or Block, 
@@ -144,6 +147,7 @@ class display_real:
 
     def setLockServo(self, row, state, timeForMove = 1.000):
         self.lockServoState[row] = state
+        
         return timeForMove
    
     def setBlockServo(self, column, state):
@@ -153,6 +157,9 @@ class display_real:
         for y in range(0,len(self.displayState)):
             if self.lockServoState[y] is DD.UNLOCK:
                 self.displayState[y][column] = (self.displayState[y][column] + columnChange) % 4
+
+    def updateDisplay(self):
+        # send write servos
 
     ## sentGcode
         # sentGcode takes in gcode command, 
