@@ -55,17 +55,63 @@ class display_real:
     def getLockServoPos(self, row):
         return self.lockServoState[row]
 
+    def __getJsonValue(self, servoType = DD.LOCK_SERVO, servoCoordinate = 0, info = 'centerOffset'):
+        index = ""
+        if servoType is DD.LOCK_SERVO:
+            index += "col"
+        if servoType is DD.BLOCK_SERVO:
+            index += "row"
+        index += str(servoCoordinate)
+
+        return self.dispServoData[index][info]
+
     def __getServoSendTo(self, servoType = DD.LOCK_SERVO, servoCoordinate = 0, servoSetPos):
         # Takes 
             # Lock or Block, 
             # Servo Coordinate location is 
             # Servo Desired state.
-        # Handles what sides servos are on
-        # Handles Offset of Where Servos Should 
+            # Handles what sides servos are on
+            # Handles Offset of Where Servos Should 
+        # Returns
+            # Your Mom
+            # Servo Set Position
         if not self.__getServoSendTo_InputChecker(self, servoType, servoCoordinate, servoSetPos):
             return False
 
-        ## get servo data
+        # Get Index of Servo for JSON
+        write = __getJsonValue(self, servoType, servoCoordinate, 'centerOffset')
+
+        # If you have to flip the servo position
+        multiplier = 1
+        if servoType is DD.LOCK_SERVO: 
+            if servoSetPos is DD.LOCK:
+                write += 0
+            if servoSetPos is DD.UNLOCK:
+                write += 180
+
+        if servoType is DD.BLOCK_SERVO:
+            if self.servoSetPos is DD.SUBTRACT:
+                write += 0
+            if self.servoSetPos is DD.MIDDLE:
+                write += 90                
+            if self.servoSetPos is DD.ADD:
+                write += 180
+        
+        # compensate if the servo direction needs to be flipped
+        if self.lockSide is DD.LEFT or self.lockSide is DD.BOTTOM:
+            write = 180 - write
+
+        # bounds the servo value to something that can be sent
+        write = __bound(0, write, 180)
+
+        # Remap value to be between -90 and 90
+        if True:
+            write -= 90
+
+        return write
+
+    def __bound(low, high, value):
+        return max(low, min(high, value))
 
     def __getServoSendTo_InputChecker(self, servoType, servoCoordinate, servoSetPos):
         # Checks for __getServoSendTo()

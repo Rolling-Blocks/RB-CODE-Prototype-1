@@ -1,6 +1,3 @@
-import skimage
-from skimage import color
-from skimage import io
 import numpy as np
 import time
 import cv2
