@@ -1,7 +1,7 @@
 # Helps with generic remapping of array elements
 import copy
 import numpy as np
-
+#
 class array_manipulator:
     def __init__(self):
         pass
