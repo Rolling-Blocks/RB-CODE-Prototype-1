@@ -1,5 +1,5 @@
 from enum import Enum, auto
-
+#
 # Shared Enum For Project
 
 class DispDef(Enum):
