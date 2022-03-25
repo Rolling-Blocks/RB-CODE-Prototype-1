@@ -1,7 +1,6 @@
 # Python program to demonstrate
 # Conversion of JSON data to
 # dictionary
-#
  
 # importing the module
 import json

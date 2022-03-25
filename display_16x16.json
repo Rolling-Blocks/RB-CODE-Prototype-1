@@ -2,7 +2,7 @@
 "dispDim":          [16, 16],
 "pixelVal":         ["#545454", "#1F1F1F", "#0D0D0D", "#FFFFFF"],
 "timesForMoves":    {"DD.ROWLOCK": 200, "DD.COLRETURN": 200, "DD.ROWUNLOCK": 200, "DD.COLACTUATE": 200},
-"displayTitle":       "6x9 test",
+"displayTit":       "6x9 test",
 "r0"    :{"moduleId":  0,   "servoId": 0,     "centerOffset":0},
 "r1"    :{"moduleId":  0,   "servoId": 1,     "centerOffset":0},
 "r2"    :{"moduleId":  0,   "servoId": 2,     "centerOffset":0},

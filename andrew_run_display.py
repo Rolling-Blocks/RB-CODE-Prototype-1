@@ -1,7 +1,7 @@
 import andrew_write_display as write_display
 import time
 import random
-
+#
 def lock_all(servodisp):
     for i in range(16):
         servodisp.set_servo(0,i,0.0)
