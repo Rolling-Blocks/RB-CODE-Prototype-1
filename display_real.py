@@ -4,7 +4,7 @@ from disp_def import DispDef as DD
 from disp_def import blockStateKey
 import copy
 import json
-
+#
 defaultTimesPerMove = {DD.ROWLOCK: 750, DD.COLRETURN: 1000, DD.ROWUNLOCK: 750, DD.COLACTUATE: 1000}
 
 class display_real:

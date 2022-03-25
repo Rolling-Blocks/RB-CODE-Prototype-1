@@ -2,9 +2,9 @@ from smbus2 import SMBus, i2c_msg
 import time
 
 class andrew_write_display:
-    def __init__(self, raspi_channel, servo_addresses):
+    def __init__(self, raspi_channel = 1, servo_addresses = [10, 14]):
         """
-            raspi-channel   [int]
+            raspi-channel   [int] always 1
             sevo_addresses  [int[]]
         """
         self.channel = raspi_channel
@@ -39,10 +39,11 @@ class andrew_write_display:
         return self.data[channel][1][servo_pos]
 
 if __name__ == '__main__':
-    servos = andrew_write_display(1,[10])
+    servos = andrew_write_display()
     index = 0
     while 1:
-        servos.set_servo(0, 11, (index % 255) / 255.0)
+        servos.set_servo(1, 14, (index % 255) / 255.0)
+        servos.set_servo(0, 14, (index % 255) / 255.0)
         print(index)
         index += 10
         servos.write_servos()
