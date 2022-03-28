@@ -90,26 +90,26 @@ class display_real:
             if servoSetPos is DD.LOCK:
                 write += 0
             if servoSetPos is DD.UNLOCK:
-                write += 180
+                write += 255
 
         if servoType is DD.BLOCK_SERVO:
             if self.servoSetPos is DD.SUBTRACT:
                 write += 0
             if self.servoSetPos is DD.MIDDLE:
-                write += 90                
+                write += 127                
             if self.servoSetPos is DD.ADD:
-                write += 180
+                write += 255
         
         # compensate if the servo direction needs to be flipped
         if self.lockSide is DD.LEFT or self.lockSide is DD.BOTTOM:
-            write = 180 - write
+            write = 255 - write
 
         # bounds the servo value to something that can be sent
-        write = __bound(0, write, 180)
+        write = __bound(0, write, 255)
 
-        # Remap value to be between -90 and 90
+        # Remap value to be between 0 and 255
         if True:
-            write -= 90
+            write -= 128
 
         return write
 
