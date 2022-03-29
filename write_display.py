@@ -1,7 +1,7 @@
 from smbus2 import SMBus, i2c_msg
 import time
 #
-class andrew_write_display:
+class write_display:
     def __init__(self, raspi_channel = 1, servo_addresses = [10, 14]):
         """
             raspi-channel   [int] always 1
@@ -39,7 +39,7 @@ class andrew_write_display:
         return self.data[channel][1][servo_pos]
 
 if __name__ == '__main__':
-    servos = andrew_write_display()
+    servos = write_display()
     index = 0
     while 1:
         #servos.set_servo(1, 14, (index % 255) / 255.0) # 14 locks

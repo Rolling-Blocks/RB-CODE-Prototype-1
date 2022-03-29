@@ -4,7 +4,7 @@ from disp_def import DispDef as DD
 from disp_def import blockStateKey
 import copy
 import json
-import andrew_write_display
+import write_display
 
 defaultTimesPerMove = {DD.ROWLOCK: 750, DD.COLRETURN: 1000, DD.ROWUNLOCK: 750, DD.COLACTUATE: 1000}
 
@@ -204,20 +204,4 @@ if __name__ == '__main__':
     for i in range(0,dispDimensions[1]):
         disp.setLockServo(i, DD.LOCK)
 
-    i = 1
-    while True:
-        x = random.randint(0,dispDimensions[0]-1)
-        y = random.randint(0,dispDimensions[1]-1)
-        t = 0.75
-
-        disp.setLockServo(y, DD.UNLOCK)
-        time.sleep(t)
-
-        disp.setBlockServo(x, DD.ADD)
-        time.sleep(t)
-        
-        disp.setLockServo(y, DD.LOCK)
-        time.sleep(t)
-
-        disp.setBlockServo(x, DD.MIDDLE)
-        time.sleep(t)
+    
