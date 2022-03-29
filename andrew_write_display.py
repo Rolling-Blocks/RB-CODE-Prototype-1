@@ -42,8 +42,8 @@ if __name__ == '__main__':
     servos = andrew_write_display()
     index = 0
     while 1:
-        servos.set_servo(1, 14, (index % 255) / 255.0)
-        servos.set_servo(0, 14, (index % 255) / 255.0)
+        #servos.set_servo(1, 14, (index % 255) / 255.0) # 14 locks
+        servos.set_servo(0, 14, (index % 255) / 255.0) # 10 blocks
         print(index)
         index += 10
         servos.write_servos()
