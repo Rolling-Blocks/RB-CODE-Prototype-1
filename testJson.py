@@ -22,3 +22,6 @@ arr = [0 for i in range(16)]
 print(arr)
 arr[5] = 5
 print(arr)
+print()
+double = lambda x : x * 2
+print([double(i) for i in (10, 5)])
