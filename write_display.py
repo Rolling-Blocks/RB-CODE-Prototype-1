@@ -13,14 +13,14 @@ class write_display:
         self.bus = SMBus(self.channel)
         for addr in servo_addresses:
             self.data.append((addr, [0.0]*16))
-    
-    def set_servo(self, channel, servo_num, servo_pos):
+
+    def set_servo(self, moduleID, servoModuleID, servo_pos):
         """
-            channel     [int]
-            servo_num   [int]
-            servo_pos   [float]
+            moduleID        [int]
+            servoModuleID   [int]
+            servo_pos       [float]
         """
-        self.data[channel][1][servo_num] = servo_pos
+        self.data[moduleID][1][servoModuleID] = servo_pos
     
     def set_servo_arr(self, channel, servo_pos):
         """
@@ -41,10 +41,12 @@ class write_display:
 if __name__ == '__main__':
     servos = write_display()
     index = 0
+
     while 1:
-        #servos.set_servo(1, 14, (index % 255) / 255.0) # 14 locks
-        servos.set_servo(0, 14, (index % 255) / 255.0) # 10 blocks
+        for i in range(16):
+            servos.set_servo(1, i, (index % 255) / 255.0) # 14 locks
         print(index)
         index += 10
         servos.write_servos()
-        time.sleep(0.1)
+        time.sleep(0.04)
+        
