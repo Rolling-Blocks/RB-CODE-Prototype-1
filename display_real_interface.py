@@ -8,7 +8,7 @@ import servo_packet_manager as spm
 # Gets States and handles navigation of JSON and publishing to servos
 
 class display_real_interface:
-    def __init__(self, servoFile, dispDim, blockSide = DD.TOP, lockSide = DD.RIGHT):
+    def __init__(self, servoFile, dispDim, blockSide, lockSide, givenSpm = spm.servo_packet_manager([10,14])):
         
         # numLockRow ~ Height of Diplay
         self.numLockRow = dispDim[1]
@@ -28,7 +28,7 @@ class display_real_interface:
         # display viewer setup
         self.blockServoState = [DD.MIDDLE] * self.numBlockCol
 
-        self.servos = spm.servo_packet_manager()
+        self.servos = givenSpm
 
     def getBlockServosState(self):          return self.blockServoState
     def getBlockServoState(self, col):      return self.blockServoState[col]
@@ -76,11 +76,11 @@ class display_real_interface:
                 write = 128
 
         if servoType is DD.BLOCK_SERVO:
-            if self.servoState is DD.SUBTRACT:
+            if servoState is DD.SUBTRACT:
                 write = 255
-            if self.servoState is DD.MIDDLE:
+            if servoState is DD.MIDDLE:
                 write = 127                
-            if self.servoState is DD.ADD:
+            if servoState is DD.ADD:
                 write = 0
         
         if write == -1:
@@ -154,7 +154,6 @@ class display_real_interface:
         """
             row         [int]
             state       [DD.LOCK or DD.UNLOCK]
-            timeForMove [float]
         """
         self.__setServo(st = DD.LOCK_SERVO, sc = row, state = state)
 
@@ -174,8 +173,26 @@ class display_real_interface:
         self.servos.write_servos()
 
     ### Copy For Columns once Lock Code Checked    
-    def setBlockServo(self, row, state, updateAfter = True): pass
-    def setBlockServos(self, states): pass
+    def setBlockServo(self, col, state, updateAfter = True):
+        """
+            col         [int]
+            state       DD.SUBTRACT or DD.MIDDLE or DD.ADD
+        """
+        self.__setServo(st = DD.BLOCK_SERVO, sc = col, state = state)
+
+        # Update Display
+        if updateAfter:
+            self.servos.write_servos()
+    
+    def setBlockServos(self, states):
+        """
+            states      [DD.SUBTRACT or DD.MIDDLE or DD.ADD]   length same as number of rows
+        """
+        if not len(states) == self.numBlockCol:
+            print("setLockServos" + " given invalid number of servo states")
+        for i in range(len(states)):
+            self.setBlockServo(i, states[i], updateAfter = False)
+        self.servos.write_servos()
 
     def __checkParametersValid(self, servoCoordinate, servoType, servoState):
         # Checks for __getDesServoPos
@@ -210,17 +227,24 @@ class display_real_interface:
 if __name__ == '__main__':
     servoJson = 'display_16x16.json'
     dispDimensions = (16, 16) # (width, height)
-    disp = display_real_interface(servoJson, dispDimensions, DD.TOP, DD.RIGHT) 
+    servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
+    disp = display_real_interface(servoJson, dispDimensions, DD.TOP, DD.RIGHT, servoPm) 
     
     while True:
-        for i in range(dispDimensions[1]):
-            disp.setLockServo(i, DD.LOCK)
-        print("LOCK")
+        for i in range(dispDimensions[0]):
+            disp.setBlockServo(i, DD.SUBTRACT)
+        print("SUBTRACT")
         time.sleep(2)
 
-        for i in range(dispDimensions[1]):
-            disp.setLockServo(i, DD.UNLOCK)
-        print("UNLOCK")
+        for i in range(dispDimensions[0]):
+            disp.setBlockServo(i, DD.MIDDLE)
+        print("MIDDLE")
         time.sleep(2)
+
+        for i in range(dispDimensions[0]):
+            disp.setBlockServo(i, DD.ADD)
+        print("ADD")
+        time.sleep(2)
+
 
     

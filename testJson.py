@@ -31,3 +31,5 @@ print(inBounds(1.01))
 
 def my_function(fname): print(fname + " Refsnes")
 my_function("sedrrt")
+
+print(data)

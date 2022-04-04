@@ -2,7 +2,7 @@ from smbus2 import SMBus, i2c_msg
 import time
 #
 class servo_packet_manager:
-    def __init__(self, module_IDs = [10, 14], raspi_channel = 1, servoPerModule = 16):
+    def __init__(self, module_IDs, raspi_channel = 1, servoPerModule = 16):
         """
             module_IDs  [int[]]
             raspi-channel   [int] always 1
