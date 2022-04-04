@@ -32,12 +32,12 @@ class servo_packet_manager:
         return self.servoDict[moduleID][servo_pos]
     
     def write_servos(self):
-        print()
+        #print()
         inBounds = lambda a : max(0, min(255, int(a)))
         for ids in self.module_IDs:
             servoArr = [inBounds(i) for i in self.servoDict[ids]]
-            print(str(ids) + " servoArr")
-            print(servoArr)
+            #print(str(ids) + " servoArr")
+            #print(servoArr)
             write = i2c_msg.write(ids, servoArr)
             self.bus.i2c_rdwr(write)
 

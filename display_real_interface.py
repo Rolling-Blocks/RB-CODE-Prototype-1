@@ -56,7 +56,7 @@ class display_real_interface:
         serId   = self.dispServoData[index]["servoId"] 
         cenOff  = self.dispServoData[index]["centerOffset"] 
         toRet = (modId, serId, cenOff)
-        print(toRet)
+        #print(toRet)
         return toRet
 
     # Turns ServoState To Default Servo Position, does not account for bay position
@@ -115,10 +115,10 @@ class display_real_interface:
             print("__bayCompensator " + "invalid servoType Given")
 
         # bounds the servo value to something that can be sent
-        print("default position given " + str(defaultServoPos))
-        print("write before bounds " + str(write))
+        #print("default position given " + str(defaultServoPos))
+        #print("write before bounds " + str(write))
         write = self.__bound(0, write, 255)
-        print("write after bounds " + str(write))
+        #print("write after bounds " + str(write))
         
         # Reverse if necessary
         if self.lockSide is DD.LEFT or self.lockSide is DD.BOTTOM:
