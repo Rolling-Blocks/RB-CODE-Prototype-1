@@ -1,12 +1,37 @@
-from disp_def import DispDef as DD
-import numpy as np
-import animation as ani
-import array_manipulator as arrMap
-import image_processor as impr
-import display_virtual as disvir
-import display_virtual_window as dvw
+# Check if Running On Pi
+
+import io 
+import os
+
+def is_raspberrypi():
+    try:
+        with io.open('/sys/firmware/devicetree/base/model', 'r') as m:
+            if 'raspberry pi' in m.read().lower(): return True
+    except Exception: pass
+    return False
+
+real_Disp = 0
+if is_raspberrypi():
+    print("Linux")
+    real_Disp = True
+else:
+    print("win32")
+
+from disp_def import DispDef    as DD
+import numpy                    as np
+import animation                as ani
+import array_manipulator        as arrMap
+import image_processor          as impr
 import timer as t
 import run_clock as rc
+
+if real_Disp:
+    import display_real             as dr
+    import display_real_interface   as dri
+if not real_Disp:
+    import display_virtual          as dv
+    import display_virtual_window   as dvw
+
 
 ### Setups Parameters
 dispDim = (16, 16) # (width, height)
@@ -23,8 +48,9 @@ tImage = t.timer()
 tClock = t.timer()
 tGcode = t.timer()
 clockP = rc.run_clock(tClock, dispDim)
-dispSim = disvir.display_virtual(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal, timesForMoves)  
-#dispWind = dvw.display_virtual_window(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal)
+if not real_Disp:
+    dispSim = dv.display_virtual(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal, timesForMoves)  
+    #dispWind = dvw.display_virtual_window(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal)
 
 # Image Specifiers
 imageState = DD.IMG_RAND
@@ -49,7 +75,8 @@ while True:
     # Check Buttons For Changing States
     if not len(gcode) == 0 and tGcode.beenXmils(buffer):
         popped = gcode.pop(0)
-        buffer = dispSim.sendGcode(popped)
+        if not real_Disp:
+            buffer = dispSim.sendGcode(popped)
         print("Sent Gcode Line, " + str(len(gcode)) + " line left.")
 
     else:
