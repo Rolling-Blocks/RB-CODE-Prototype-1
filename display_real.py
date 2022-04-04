@@ -4,12 +4,12 @@ from disp_def import DispDef as DD
 from disp_def import blockStateKey
 import copy
 import json
-import write_display as wd
+import write_servo as ws
 
 defaultTimesPerMove = {DD.ROWLOCK: 750, DD.COLRETURN: 1000, DD.ROWUNLOCK: 750, DD.COLACTUATE: 1000}
 
 class display_real:
-    def __init__(self, displayTitle, dsd, dispDim, blockSide = DD.TOP, lockSide = DD.RIGHT, pixelColors = 0, timePerMove = defaultTimesPerMove, raspi_channel = 1, servo_addresses = [10, 14]):
+    def __init__(self, displayTitle, dsd, dispDim, blockSide = DD.TOP, lockSide = DD.RIGHT, pixelColors = 0, timePerMove = defaultTimesPerMove, raspi_channel = 1, module_IDs = [10, 14]):
         
         # numLockRow ~ Height of Diplay
         self.numLockRow = dispDim[1]
@@ -38,8 +38,8 @@ class display_real:
 
         # Servo and Module Setup
         self.raspi_channel = raspi_channel
-        self.servo_addresses = servo_addresses
-        self.servos = wd.write_display(raspi_channel, servo_addresses)
+        self.module_IDs = module_IDs
+        self.servos = ws.write_servo(module_IDs)
 
     def getPixelKey(self):
         return self.pixelColors
@@ -77,15 +77,17 @@ class display_real:
         return got
 
     # Returns
-        # Your Mom
-        # Servo Set Position
-    def __getServoSendTo(self, servoType = DD.LOCK_SERVO, servoCoordinate = 0, servoSetPos = 0):
+        # Desired Servo Set Position
+    def __getDesServoPos(self, servoType, servoCoordinate, servoState):
+        """
+            servoType       [DD.LOCK or DD.BLOCK]
+            servoCoordinate [int] x position or y postion of servo
+        """
         # print stuffs
         print()
         print("__getServoSendTo")
         print(servoType)
         print(servoCoordinate)
-        print(servoSetPos)
         # Takes 
             # Lock or Block, 
             # Servo Coordinate location is 
@@ -119,24 +121,18 @@ class display_real:
         
         # compensate if the servo direction needs to be flipped
         if self.lockSide is DD.LEFT or self.lockSide is DD.BOTTOM:
+            print("reversed")
             write = 255 - write
 
         # bounds the servo value to something that can be sent
         write = self.__bound(0, write, 255)
 
-        # Remap value to be between 0 and 255
-        if True:
-            write -= 128
-
         return write
-
-    def __bound(self, low, high, value):
-        return max(low, min(high, value))
-
-    def __getServoSendTo_InputChecker(self, servoType, servoCoordinate, servoSetPos):
-        # Checks for __getServoSendTo()
+    
+    def __getDesServoPos_InputChecker(self, servoType, servoCoordinate, servoState):
+        # Checks for __getDesServoPos
         if servoType is not DD.LOCK_SERVO and servoType is not DD.BLOCK_SERVO:
-            print("'__getServoSendTo()' not given valid 'servoType' ")
+            print("'__getDesServoPos' not given valid 'servoType' ")
             return False
 
         # Check BLOCK_SERVO is valid
@@ -145,7 +141,7 @@ class display_real:
             if not (0 <= servoCoordinate) or not (servoCoordinate < self.numBlockCol):
                 print("'servoCoordinate' for row is our of bounds")
                 return False
-            if not (servoSetPos is DD.SUBTRACT or servoSetPos is DD.MIDDLE or servoSetPos is DD.ADD):
+            if not (servoState is DD.SUBTRACT or servoState is DD.MIDDLE or servoState is DD.ADD):
                 print("'servoSetPos' state is not valid")
                 return False
 
@@ -155,12 +151,35 @@ class display_real:
             if not (0 <= servoCoordinate) or not (servoCoordinate < self.numLockRow):
                 print("'servoCoordinate' for row is our of bounds")
                 return False
-            if not (servoSetPos is DD.LOCK or servoSetPos is DD.UNLOCK):
+            if not (servoState is DD.LOCK or servoState is DD.UNLOCK):
                 print("'servoSetPos' state is not valid")
                 return False
 
         # Everything is Valid
         return True
+
+    def __bound(self, low, high, value):
+        return max(low, min(high, value))
+    
+    def setServo(self, st, sc, state):
+        # Get Data for Write_Display
+        moduleId    = self.__getJsonValue(servoType = st, servoCoordinate = sc, info = 'moduleId')
+        servoId     = self.__getJsonValue(servoType = st, servoCoordinate = sc, info = 'servoId')
+        offset      = self.__getJsonValue(servoType = st, servoCoordinate = sc, info = 'centerOffset')
+        setPoint    = self.__getDesServoPos(servoType = st, servoCoordinate = sc, servoSetPos = state)
+        
+        # Updating Display Logged Locked States
+        self.lockServoState[row] = state
+        
+        # Sending Data to Write_Display
+        self.servos.setServo(moduleId, servoId, setPoint)
+
+        # Update Display
+        if updateAfter:
+            self.servos.write_servos()
+
+        # Return Time Needed for Move to Happen
+        return timeForMove  
 
     def setLockServo(self, row, state, timeForMove = 1.000, updateAfter = True):
         """
@@ -169,19 +188,19 @@ class display_real:
             timeForMove [float]
         """
         # Get Data for Write_Display
-        moduleID        = self.__getJsonValue(servoType = DD.LOCK_SERVO, servoCoordinate = row, info = 'moduleId')
-        servoModuleID   = self.__getJsonValue(servoType = DD.LOCK_SERVO, servoCoordinate = row, info = 'servoId')
-        setPoint        = self.__getServoSendTo(servoType = DD.LOCK_SERVO, servoCoordinate = row, servoSetPos = state)
+        moduleId    = self.__getJsonValue(servoType = DD.LOCK_SERVO, servoCoordinate = row, info = 'moduleId')
+        servoId     = self.__getJsonValue(servoType = DD.LOCK_SERVO, servoCoordinate = row, info = 'servoId')
+        setPoint    = self.__getDesServoPos(servoType = DD.LOCK_SERVO, servoCoordinate = row, servoSetPos = state)
         
         # Updating Display Logged Locked States
         self.lockServoState[row] = state
         
         # Sending Data to Write_Display
-        self.servos.set_servo(moduleID, servoModuleID, setPoint)
+        self.servos.setServo(moduleId, servoId, setPoint)
 
         # Update Display
         if updateAfter:
-            self.servos.write_display()
+            self.servos.write_servos()
 
         # Return Time Needed for Move to Happen
         return timeForMove
@@ -195,7 +214,7 @@ class display_real:
         # Get Data for Write_Display
         moduleID        = self.__getJsonValue(servoType = DD.BLOCK_SERVO, servoCoordinate = column, info = 'moduleId')
         servoModuleID   = self.__getJsonValue(servoType = DD.BLOCK_SERVO, servoCoordinate = column, info = 'servoId')
-        setPoint        = self.__getServoSendTo(servoType = DD.BLOCK_SERVO, servoCoordinate = column, servoSetPos = state)
+        setPoint        = self.__getDesServoPos(servoType = DD.BLOCK_SERVO, servoCoordinate = column, servoSetPos = state)
 
         # Updating Display Logged Block States
         self.blockServoState[column] = state
@@ -208,11 +227,11 @@ class display_real:
                 self.displayState[y][column] = (self.displayState[y][column] + columnChange) % 4
 
         # Sending Data to Write_Display
-        self.servos.set_servo(moduleID, servoModuleID, setPoint)
+        self.servos.setServo(moduleID, servoModuleID, setPoint)
 
         # Update Display
         if updateAfter:
-            self.servos.write_display()
+            self.servos.write_servos()
 
         return timeForMove
 
@@ -263,10 +282,12 @@ if __name__ == '__main__':
     while True:
         for i in range(dispDimensions[1]):
             disp.setLockServo(i, DD.LOCK)
+        print("LOCK")
         time.sleep(2)
 
         for i in range(dispDimensions[1]):
             disp.setLockServo(i, DD.UNLOCK)
+        print("UNLOCK")
         time.sleep(2)
 
     

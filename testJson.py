@@ -24,4 +24,10 @@ arr[5] = 5
 print(arr)
 print()
 double = lambda x : x * 2
+inBounds = lambda a : max(0, min(255, int(a * 255)))
 print([double(i) for i in (10, 5)])
+print("testing in bouinds")
+print(inBounds(1.01))
+
+def my_function(fname): print(fname + " Refsnes")
+my_function("sedrrt")
