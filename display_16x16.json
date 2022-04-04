@@ -13,7 +13,7 @@
 "r7"   :{"moduleId":   14 , "servoId": 8   , "centerOffset": 0 },
 "r8"   :{"moduleId":   14 , "servoId": 7   , "centerOffset": 0 },
 "r9"   :{"moduleId":   14 , "servoId": 6   , "centerOffset": 0 },
-"r10"  :{"moduleId":   14 , "servoId": 5   , "centerOffset": 0 },
+"r10"  :{"moduleId":   14 , "servoId": 5   , "centerOffset": -10 },
 "r11"  :{"moduleId":   14 , "servoId": 4   , "centerOffset": 0 },
 "r12"  :{"moduleId":   14 , "servoId": 3   , "centerOffset": 0 },
 "r13"  :{"moduleId":   14 , "servoId": 2   , "centerOffset": 0 },
