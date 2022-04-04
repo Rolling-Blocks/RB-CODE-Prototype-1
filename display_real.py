@@ -4,8 +4,8 @@ from disp_def import DispDef as DD
 from disp_def import blockStateKey
 import copy
 import json
-import write_servo as ws
 import display_real_interface as dri
+import servo_packet_manager as spm
 
 class display_real:
     def __init__(self, displayTitle, dispDim, interface, pixelColors, timePerMove):
@@ -26,7 +26,7 @@ class display_real:
 
         # Display Real Interface
         self.dispInterface = interface
-        self.dispInterface.setLockServos(self.blockServoState)
+        self.dispInterface.setLockServos(self.lockServoState)
         time.sleep(1)
         self.dispInterface.setBlockServos(self.blockServoState)
 
@@ -46,6 +46,19 @@ class display_real:
         self.dispInterface.setLockServo(row, state, updateAfter)
         self.lockServoState[row] = state
 
+    def setLockServos(self, states, updateAfter = True):
+        """
+            states      [DD.UNLOCK or DD.LOCK]
+            updateAfter [boolean]
+        """
+        #print("setLockServos")
+        #print(states)
+        for i in range(len(states)):
+            self.dispInterface.setLockServo(i, states[i], False)
+            self.lockServoState[i] = states[i]
+        if updateAfter:
+            self.dispInterface.updateServos()
+
     def setBlockServo(self, col, state, updateAfter = True):
         """
             col         [int]
@@ -62,6 +75,19 @@ class display_real:
             if self.lockServoState[y] is DD.UNLOCK:
                 self.displayState[y][column] = (self.displayState[y][column] + columnChange) % 4
 
+    def setBlockServos(self, states, updateAfter = True):    
+        """
+            state       [DD.SUBTRACT or DD.MIDDLE or DD.ADD]
+            updateAfter [boolean]
+        """
+        #print("setLockServos")
+        #print(states)
+        for i in range(len(states)):
+            self.dispInterface.setBlockServo(i, states[i], False)
+            self.blockServoState[i] = states[i]
+        if updateAfter:
+            self.dispInterface.updateServos()
+
 
     ## sentGcode
         # sentGcode takes in gcode command, 
@@ -76,17 +102,14 @@ class display_real:
                 print("Gcode Command Sent Incorrect Number of Servo Commands")
                 print("Expected " + str(self.numLockRow) + ", Recieved " + str(len(moves)))
             else:
-                print("Running Lock Actuation")
-                for j in range(len(moves)):
-                    self.setLockServo(j, moves[j], False)
+                #print("Running Lock Actuation")
+                self.setLockServos(moves)
         elif moveType is DD.COLRETURN or moveType is DD.COLACTUATE:
             if not len(moves) == self.numBlockCol:
                 print("Gcode Command Sent Incorrect Number of Servo Commands")
                 print("Expected " + str(self.numBlockCol) + ", Recieved " + str(len(moves)))
             else:
-                print("Running Block Actuation")
-                for i in range(len(moves)):
-                    self.setBlockServo(i, moves[i], False)
+                self.setBlockServos(moves)
 
         # Send Back Time Buffer Required To Let Display Finish Move 
         return self.timePerMove[moveType]
@@ -101,7 +124,7 @@ if __name__ == '__main__':
     servoJson = 'display_16x16.json'
     dispDimensions = (16, 16) # (width, height)
     servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
-    dispInter = display_real_interface(servoJson, dispDimensions, DD.TOP, DD.RIGHT, servoPm) 
+    dispInter = dri.display_real_interface(servoJson, dispDimensions, DD.TOP, DD.RIGHT, servoPm) 
     
     displayTit = '6x9 test'
     pixelVal = ('#CD853F','#8B5A2B','#008080','#D8BFD8')
@@ -109,17 +132,28 @@ if __name__ == '__main__':
     disp = display_real(displayTitle = displayTit, dispDim = dispDimensions, interface = dispInter, pixelColors = pixelVal, timePerMove = timePerMove)
     # displayTitle, dispDim, interface, pixelColors, timePerMove  
     
-    disp.printDispVal()
+    #disp.printDispVal()
 
-    while True:
-        for i in range(dispDimensions[1]):
-            disp.setLockServo(i, DD.LOCK)
+    while False:
+        disp.setBlockServos([DD.SUBTRACT] * dispDimensions[0])
+        print("SUBTRACT")
+        time.sleep(2)
+
+        disp.setBlockServos([DD.MIDDLE] * dispDimensions[0])
+        print("MIDDLE")
+        time.sleep(2)
+
+        disp.setBlockServos([DD.ADD] * dispDimensions[0])
+        print("ADD")
+        time.sleep(2)
+
+        disp.setLockServos([DD.LOCK] * dispDimensions[1])
         print("LOCK")
         time.sleep(2)
 
-        for i in range(dispDimensions[1]):
-            disp.setLockServo(i, DD.UNLOCK)
+        disp.setLockServos([DD.UNLOCK] * dispDimensions[1])
         print("UNLOCK")
         time.sleep(2)
+
 
     

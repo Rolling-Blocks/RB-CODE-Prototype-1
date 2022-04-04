@@ -24,11 +24,14 @@ class display_real_interface:
 
         #states of locks unlocked/locked
         self.lockServoState = [DD.UNLOCK] * self.numLockRow
-
+        
         # display viewer setup
         self.blockServoState = [DD.MIDDLE] * self.numBlockCol
 
         self.servos = givenSpm
+        self.setLockServos(self.lockServoState)
+        self.setBlockServos(self.blockServoState)
+
 
     def getBlockServosState(self):          return self.blockServoState
     def getBlockServoState(self, col):      return self.blockServoState[col]
@@ -85,6 +88,7 @@ class display_real_interface:
         
         if write == -1:
             print("__getPosFromState given invalid servoType servoState combo")
+            print("given ServoType" + str(servoType) + "   and ServoState " + str(servoState) )
 
         return write
 
@@ -104,15 +108,14 @@ class display_real_interface:
             defaultServoPos     int (between zero and 255)
             offset              absolute
         """
-        write = -1
+        write = -256
         # Do as if Default Config Bays Top and Right
         if servoType is DD.BLOCK_SERVO:
             write = defaultServoPos - offset
-        if servoType is DD.LOCK_SERVO:
+        elif servoType is DD.LOCK_SERVO:
             write = defaultServoPos + offset
-
-        if write == -1:
-            print("__bayCompensator " + "invalid servoType Given")
+        else:
+            print("__bayCompensator " + "invalid servoType Given" + " ServoType:" + str(servoType))
 
         # bounds the servo value to something that can be sent
         #print("default position given " + str(defaultServoPos))
@@ -140,6 +143,7 @@ class display_real_interface:
         moduleId, servoId, offset = self.__servoJsonInfo(st, sc)
         # Get what ServoPosition would be if no offset and if servoBays in default places 
         defaultServoPos = self.__getPosFromState(servoType = st, servoState = state)
+        #print("defaultServoPos givens ~  servoType:" + str(st) + "  servoState:" + str(state))
 
         toSendToServo = self.__bayCompensator(st, defaultServoPos, offset)
 
@@ -159,7 +163,7 @@ class display_real_interface:
 
         # Update Display
         if updateAfter:
-            self.servos.write_servos()
+            self.writeServos()
 
     # Write To Multiple Rows
     def setLockServos(self, states):
@@ -168,8 +172,12 @@ class display_real_interface:
         """
         if not len(states) == self.numLockRow:
             print("setLockServos" + " given invalid number of servo states")
-        for i in range(len(states)):
-            self.setLockServo(i, states[i], updateAfter = False)
+        else:
+            for i in range(len(states)):
+                self.setLockServo(i, states[i], updateAfter = False)
+        self.writeServos()
+
+    def writeServos(self):
         self.servos.write_servos()
 
     ### Copy For Columns once Lock Code Checked    
@@ -182,17 +190,17 @@ class display_real_interface:
 
         # Update Display
         if updateAfter:
-            self.servos.write_servos()
+            self.writeServos()
     
     def setBlockServos(self, states):
         """
             states      [DD.SUBTRACT or DD.MIDDLE or DD.ADD]   length same as number of rows
         """
         if not len(states) == self.numBlockCol:
-            print("setLockServos" + " given invalid number of servo states")
+            print("setBlockServos" + " given invalid number of servo states")
         for i in range(len(states)):
             self.setBlockServo(i, states[i], updateAfter = False)
-        self.servos.write_servos()
+        self.writeServos()
 
     def __checkParametersValid(self, servoCoordinate, servoType, servoState):
         # Checks for __getDesServoPos

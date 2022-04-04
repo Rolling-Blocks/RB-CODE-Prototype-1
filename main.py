@@ -12,10 +12,10 @@ def is_raspberrypi():
 
 real_Disp = 0
 if is_raspberrypi():
-    print("Linux")
+    print("pi")
     real_Disp = True
 else:
-    print("win32")
+    print("not pi")
 
 from disp_def import DispDef    as DD
 import numpy                    as np
@@ -28,6 +28,8 @@ import run_clock as rc
 if real_Disp:
     import display_real             as dr
     import display_real_interface   as dri
+    import servo_packet_manager     as spm
+
 if not real_Disp:
     import display_virtual          as dv
     import display_virtual_window   as dvw
@@ -35,22 +37,30 @@ if not real_Disp:
 
 ### Setups Parameters
 dispDim = (16, 16) # (width, height)
+lockBank = DD.RIGHT
+blockBank = DD.TOP
 pixelVal = ('#E1523D','#ED8B16','#C2BB00','#003547')
 pixelVal = ('#545454', '#1F1F1F', '#0D0D0D', '#FFFFFF')
 ## Times for each move (ROWLOCK, COLRETURN, ROWUNLOCK, COLACTUATE) in ms
-timesForMoves = {DD.ROWLOCK: 200, DD.COLRETURN: 200, DD.ROWUNLOCK: 200, DD.COLACTUATE: 200}
+timesForMoves = {DD.ROWLOCK: 500, DD.COLRETURN: 500, DD.ROWUNLOCK: 500, DD.COLACTUATE: 500}
 displayTit = '6x9 test'
 a = ani.animation(dispDim)
 am = arrMap.array_manipulator()
 directory = "\DispPics"
+
 ip = impr.image_processor(pixelVal, dispDim, directory)
 tImage = t.timer()
 tClock = t.timer()
 tGcode = t.timer()
 clockP = rc.run_clock(tClock, dispDim)
 if not real_Disp:
-    dispSim = dv.display_virtual(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal, timesForMoves)  
+    dispSim = dv.display_virtual(displayTit, dispDim, blockBank, lockBank, pixelVal, timesForMoves)  
     #dispWind = dvw.display_virtual_window(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal)
+else:
+    servoJson = 'display_16x16.json'
+    servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
+    dispInter = dri.display_real_interface(servoJson, dispDim, blockBank, lockBank, servoPm) 
+    dispReal = dr.display_real(displayTitle = displayTit, dispDim = dispDim, interface = dispInter, pixelColors = pixelVal, timePerMove = timesForMoves)
 
 # Image Specifiers
 imageState = DD.IMG_RAND
@@ -77,6 +87,8 @@ while True:
         popped = gcode.pop(0)
         if not real_Disp:
             buffer = dispSim.sendGcode(popped)
+        else:
+            buffer = dispReal.sendGcode(popped)
         print("Sent Gcode Line, " + str(len(gcode)) + " line left.")
 
     else:
