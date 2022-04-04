@@ -228,21 +228,18 @@ if __name__ == '__main__':
     servoJson = 'display_16x16.json'
     dispDimensions = (16, 16) # (width, height)
     servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
-    disp = display_real_interface(servoJson, dispDimensions, DD.TOP, DD.RIGHT, servoPm) 
+    dispInter = display_real_interface(servoJson, dispDimensions, DD.TOP, DD.RIGHT, servoPm) 
     
     while True:
-        for i in range(dispDimensions[0]):
-            disp.setBlockServo(i, DD.SUBTRACT)
+        dispInter.setBlockServos([DD.SUBTRACT] * dispDimensions[0])
         print("SUBTRACT")
         time.sleep(2)
 
-        for i in range(dispDimensions[0]):
-            disp.setBlockServo(i, DD.MIDDLE)
+        dispInter.setBlockServos([DD.MIDDLE] * dispDimensions[0])
         print("MIDDLE")
         time.sleep(2)
 
-        for i in range(dispDimensions[0]):
-            disp.setBlockServo(i, DD.ADD)
+        dispInter.setBlockServos([DD.ADD] * dispDimensions[0])
         print("ADD")
         time.sleep(2)
 

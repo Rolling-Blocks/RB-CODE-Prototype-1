@@ -36,26 +36,16 @@ class display_virtual:
     def getPixelKey(self):
         return self.pixelColors
 
-    def getDisplayState(self):
-        return self.displayState
-
-    def getBlockServoPos(self):
-        return self.blockServoState
-
-    def getBlockServoPos(self, col):
-        return self.blockServoState[col]
-
-    def getLockServoPos(self):
-        return self.lockServoState
-
-    def getLockServoPos(self, row):
-        return self.lockServoState[row]
+    def getDisplayState(self):          return self.displayState
+    def getBlockServoPos(self):         return self.blockServoState
+    def getBlockServoPos(self, col):    return self.blockServoState[col]
+    def getLockServoPos(self):          return self.lockServoState
+    def getLockServoPos(self, row):     return self.lockServoState[row]
 
     def setLockServo(self, row, state, doUpdateDisp = True):
         self.lockServoState[row] = state
         if doUpdateDisp:
             self.updateDisp()
-      
     def setBlockServo(self, column, state, doUpdateDisp = True):
         #print('initial: ' + str(blockStateKey(self.blockServoState[column])) + '  final' + str(blockStateKey(state)))
         columnChange = blockStateKey(state) - blockStateKey(self.blockServoState[column])
