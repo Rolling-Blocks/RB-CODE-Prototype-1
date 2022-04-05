@@ -1,6 +1,18 @@
 import numpy as np
 import time, cv2, copy, os, random, sys
 
+# Check if Running On Pi
+
+import io 
+import os
+
+def is_raspberrypi():
+    try:
+        with io.open('/sys/firmware/devicetree/base/model', 'r') as m:
+            if 'raspberry pi' in m.read().lower(): return True
+    except Exception: pass
+    return False
+
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 
@@ -22,30 +34,30 @@ class image_processor:
     def getImageTitle(self):
         return self.imgTitle
 
-    def _displayRGB(self):
-        r = self._imageResizeRGB()
+    def __displayRGB(self):
+        r = self.__imageResizeRGB()
         plt.imshow(r)
         plt.show()
 
     # split self off
-    def _imageResizeRGB(self):
+    def __imageResizeRGB(self):
         img = cv2.imread(self.imgTitle)
         resized = cv2.resize(img, (self.dispWidth, self.dispHeight), interpolation = cv2.INTER_AREA)
         return resized
 
-    def _displayBW(self):
+    def __displayBW(self):
         r = self._imageResizeBW()
         plt.imshow(r, cmap = "gray")
         plt.show()
 
     # split self off
-    def _imageResizeBW(self):
+    def __imageResizeBW(self):
         img = cv2.imread(self.imgTitle)
         imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         resized = cv2.resize(imgGray, (self.dispWidth, self.dispHeight), interpolation = cv2.INTER_AREA)
         return resized
 
-    def _reduceColors(self, img, K):
+    def __reduceColors(self, img, K):
         n = img[0][0].size
         Z = img.reshape((-1,n))
 
@@ -62,7 +74,7 @@ class image_processor:
         res2 = res.reshape((img.shape))
         return res2
 
-    def _removeColors(self, img):
+    def __removeColors(self, img):
         recorded = np.unique(img)
         imgCopy = copy.deepcopy(img)
         for y in range(0,len(img)):        
@@ -77,26 +89,36 @@ class image_processor:
             self.getRandomImage()
         else:
             self.newImage(imgTit)
-        bw = self._imageResizeBW()
-        lowRes = self._reduceColors(bw, k)
-        remapped = self._removeColors(lowRes)
+        bw = self.__imageResizeBW()
+        lowRes = self.__reduceColors(bw, k)
+        remapped = self.__removeColors(lowRes)
         return remapped
 
+    # Fucking Hell getRandomImage not working consistently
     def getRandomImage(self):
+        #Compensate if is real raspberry pi
+
         n=0
         random.seed()
+        print("penis")
         print(str(sys.path[0]) + self.image_folder)
+        print("penis")
+
         for root, dirs, files in os.walk(str(sys.path[0]) + self.image_folder):
+            print("penis")
             for name in files:
                 n += 1
                 if random.uniform(0, n) < 1:
-                    rfile=os.path.join(root, name)
+                    print("got rfile")
+                    rfile = os.path.join(root, name)
+                else:
+                    print("rfile not selected")
         print(rfile)
         self.imgTitle = rfile
 
 if __name__ == '__main__':
     dispDim = (16, 16)
-    directory = "\DispPics"
+    directory = "/DispPics"
     ip = image_processor(('#CD853F','#8B5A2B','#008080','#D8BFD8'), dispDim, directory)
     print(ip.defaultConverter(k = 3))
     i = 1

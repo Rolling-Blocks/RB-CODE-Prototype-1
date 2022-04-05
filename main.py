@@ -46,7 +46,7 @@ timesForMoves = {DD.ROWLOCK: 500, DD.COLRETURN: 500, DD.ROWUNLOCK: 500, DD.COLAC
 displayTit = '6x9 test'
 a = ani.animation(dispDim)
 am = arrMap.array_manipulator()
-directory = "\DispPics"
+directory = "/DispPics"
 
 ip = impr.image_processor(pixelVal, dispDim, directory)
 tImage = t.timer()
@@ -152,7 +152,10 @@ while True:
             composite = am.incrementArrBy(imageLayer, clockDefaultPixel, len(pixelVal))
             composite = am.boolMap(composite, clockLayer, clockDefaultPixel)
         ## Get Display Current state and composite and get animation and send it to gcode
-        a.setInitialState(dispSim.getDisplayState())
+        if not real_Disp:
+            a.setInitialState(dispSim.getDisplayState())
+        else:
+            a.setInitialState(dispReal.getDisplayState())
         a.setDesiredState(composite)
         print("Making Gcode")
         gcode = a.getGcode()
