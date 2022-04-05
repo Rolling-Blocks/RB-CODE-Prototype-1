@@ -54,11 +54,11 @@ tClock = t.timer()
 tGcode = t.timer()
 clockP = rc.run_clock(tClock, dispDim)
 if not real_Disp:
-    timesForMoves = {DD.ROWLOCK: 500, DD.COLRETURN: 500, DD.ROWUNLOCK: 500, DD.COLACTUATE: 500}
+    timesForMoves = {DD.ROWLOCK: 100, DD.COLRETURN: 100, DD.ROWUNLOCK: 100, DD.COLACTUATE: 100}
     dispSim = dv.display_virtual(displayTit, dispDim, blockBank, lockBank, pixelVal, timesForMoves)  
     #dispWind = dvw.display_virtual_window(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal)
 else:
-    timesForMoves = {DD.ROWLOCK: 100, DD.COLRETURN: 100, DD.ROWUNLOCK: 100, DD.COLACTUATE: 100}
+    timesForMoves = {DD.ROWLOCK: 250, DD.COLRETURN: 375, DD.ROWUNLOCK: 250, DD.COLACTUATE: 375}
     servoJson = 'display_16x16.json'
     servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
     dispInter = dri.display_real_interface(servoJson, dispDim, blockBank, lockBank, servoPm) 
@@ -162,4 +162,11 @@ while True:
         print("Making Gcode")
         gcode = a.getGcode()
         print(gcode)
+        print("initial")
+        if not real_Disp:
+            print(dispSim.getDisplayState())
+        else:
+            print(dispReal.getDisplayState())
+        print("final")
+        print(composite)
 

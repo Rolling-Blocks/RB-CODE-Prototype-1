@@ -4,6 +4,15 @@ from pytz import timezone
 import time
 import copy
 
+import io 
+import os
+
+def is_raspberrypi():
+    try:
+        with io.open('/sys/firmware/devicetree/base/model', 'r') as m:
+            if 'raspberry pi' in m.read().lower(): return True
+    except Exception: pass
+    return False
 
 class timer:
     def __init__(self):
@@ -17,6 +26,8 @@ class timer:
     def getHour(self):
         now = dt.datetime.now()
         hour = (now.hour) % 12
+        if is_raspberrypi():
+            hour = (now.hour - 4) % 12
         if hour == 0:
             hour = 12
         return hour

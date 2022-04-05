@@ -83,6 +83,11 @@ class animation:
 
     def getGcode(self):
         
+        #print("initial")
+        #print(self.initialState)
+        #print("desired")
+        #print(self.desiredState)
+
         mq = self.makeMoveQue()
         moves = []
 
