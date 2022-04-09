@@ -24,6 +24,7 @@ import array_manipulator        as arrMap
 import image_processor          as impr
 import timer as t
 import run_clock as rc
+import display
 
 if real_Disp:
     import display_real             as dr
@@ -36,43 +37,39 @@ if not real_Disp:
 
 
 ### Setups Parameters
-dispDim = (16, 16) # (width, height)
-lockBank = DD.RIGHT
-blockBank = DD.TOP
-pixelVal = ('#E1523D','#ED8B16','#C2BB00','#003547')
-pixelVal = ('#545454', '#1F1F1F', '#0D0D0D', '#FFFFFF')
+d = display.display((16, 16), DD.TOP, DD.RIGHT, ('#545454', '#1F1F1F', '#0D0D0D', '#FFFFFF'), '16x16 display_virtual test')
+
 ## Times for each move (ROWLOCK, COLRETURN, ROWUNLOCK, COLACTUATE) in ms
 timesForMoves = {DD.ROWLOCK: 500, DD.COLRETURN: 500, DD.ROWUNLOCK: 500, DD.COLACTUATE: 500}
-displayTit = '6x9 test'
-a = ani.animation(dispDim)
+a = ani.animation(d.getDispDim())
 am = arrMap.array_manipulator()
-directory = "/DispPics"
+imgDirectory = "/DispPics"
+ip = impr.image_processor(d.getPixelKey(), d.getDispDim(), imgDirectory)
 
-ip = impr.image_processor(pixelVal, dispDim, directory)
 tImage = t.timer()
 tClock = t.timer()
 tGcode = t.timer()
-clockP = rc.run_clock(tClock, dispDim)
+clockP = rc.run_clock(tClock, d.getDispDim())
+
 if not real_Disp:
     timesForMoves = {DD.ROWLOCK: 100, DD.COLRETURN: 100, DD.ROWUNLOCK: 100, DD.COLACTUATE: 100}
-    dispSim = dv.display_virtual(displayTit, dispDim, blockBank, lockBank, pixelVal, timesForMoves)  
-    #dispWind = dvw.display_virtual_window(displayTit, dispDim, DD.TOP, DD.RIGHT, pixelVal)
+    dispSim = dv.display_virtual(d, timesForMoves)  
 else:
     timesForMoves = {DD.ROWLOCK: 250, DD.COLRETURN: 375, DD.ROWUNLOCK: 250, DD.COLACTUATE: 375}
     servoJson = 'display_16x16.json'
     servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
     dispInter = dri.display_real_interface(servoJson, dispDim, blockBank, lockBank, servoPm) 
-    dispReal = dr.display_real(displayTitle = displayTit, dispDim = dispDim, interface = dispInter, pixelColors = pixelVal, timePerMove = timesForMoves)
+    dispReal = dr.display_real(displayTitle = displayTit, dispDim = d.getDispDim(), interface = dispInter, pixelColors = d.getPixelKey(), timePerMove = timesForMoves)
 
 # Image Specifiers
 imageState = DD.IMG_RAND
 imageDefaultPixel = 0
-imageLayer = np.full(dispDim, imageDefaultPixel)
+imageLayer = np.full(d.getDispDim(), imageDefaultPixel)
 
 # Clock Specifiers
 clockState = DD.CLC_RUN
 clockDefaultPixel = 3
-clockLayer = np.full(dispDim, False)
+clockLayer = np.full(d.getDispDim(), False)
 
 # Gcode
 gcode = []
@@ -97,7 +94,7 @@ while True:
         ## Stop Image Blank
         if imageState is DD.IMG_NO:
             changed = True
-            imageLayer = np.full(dispDim, imageDefaultPixel)
+            imageLayer = np.full(d.getDispDim(), imageDefaultPixel)
             imageState = DD.CLC_NULL
             print("IMG_NO")
             
@@ -107,11 +104,11 @@ while True:
             changed = True
             # Reduces k means clustering values by one if the clock is running
             if clockState is DD.CLC_NO or clockState is DD.CLC_NULL:
-                imageLayer = ip.defaultConverter(k = len(pixelVal))
-                print("K means " + str(len(pixelVal)))
+                imageLayer = ip.defaultConverter(k = len(d.getPixelKey()))
+                print("K means " + str(len(d.getPixelKey())))
             else:
-                imageLayer = ip.defaultConverter(k = len(pixelVal) - 1)
-                print("K means " + str(len(pixelVal) - 1))
+                imageLayer = ip.defaultConverter(k = len(d.getPixelKey()) - 1)
+                print("K means " + str(len(d.getPixelKey()) - 1))
             print(imageLayer)
             print("IMG_RAND")
 
@@ -120,16 +117,16 @@ while True:
             changed = True
             # Reduces k means clustering values by one if the clock is running
             if clockState is DD.CLC_NO or clockState is DD.CLC_NULL:
-                imageLayer = ip.defaultConverter(k = len(pixelVal))
+                imageLayer = ip.defaultConverter(k = len(d.getPixelKey()))
             else:
-                imageLayer = ip.defaultConverter(k = len(pixelVal) - 1)
+                imageLayer = ip.defaultConverter(k = len(d.getPixelKey()) - 1)
             imageState = DD.CLC_NULL
             print("IMG_STATIC")
         
         ## Stop Clock 
         if clockState is DD.CLC_NO:
             changed = True
-            clockLayer = np.full(dispDim, False)
+            clockLayer = np.full(d.getDispDim(), False)
             clockState = DD.CLC_NULL
             print("CLC_NO")
 
@@ -144,29 +141,25 @@ while True:
     if changed == True and len(gcode) == 0:
         changed = False
         # Stack Layers
-        composite = np.zeros(dispDim)
+        composite = np.zeros(d.getDispDim())
         # Turn clockLayer from bool to appropriate ints array
         if clockState is DD.CLC_NO or clockState is DD.CLC_NULL:
             print("Just Image Layer")
             composite = imageLayer
         else:
             print("Image and Clock Layer")
-            composite = am.incrementArrBy(imageLayer, clockDefaultPixel, len(pixelVal))
+            composite = am.incrementArrBy(imageLayer, clockDefaultPixel, len(d.getPixelKey()))
             composite = am.boolMap(composite, clockLayer, clockDefaultPixel)
+        
         ## Get Display Current state and composite and get animation and send it to gcode
-        if not real_Disp:
-            a.setInitialState(dispSim.getDisplayState())
-        else:
-            a.setInitialState(dispReal.getDisplayState())
+        a.setInitialState(d.getDisplayState())
         a.setDesiredState(composite)
+
         print("Making Gcode")
         gcode = a.getGcode()
         print(gcode)
         print("initial")
-        if not real_Disp:
-            print(dispSim.getDisplayState())
-        else:
-            print(dispReal.getDisplayState())
+        print(d.getDisplayState())
         print("final")
         print(composite)
 

@@ -28,6 +28,8 @@ class display_virtual:
         self.display.setBlockServo(col, state)
         if dorefreshDisp:
             self.refreshDisp()
+
+    
     def printDispVal(self):
         #prints displat as a 2d array of int values
         for s in self.getDisplayState():

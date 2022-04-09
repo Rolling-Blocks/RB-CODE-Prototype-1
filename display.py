@@ -57,6 +57,15 @@ class display:
             if self.lockServoState[y] is DD.UNLOCK:
                 self.displayState[y][column] = (self.displayState[y][column] + columnChange) % 4
 
+    def setBlockServos(self, blockStates):
+        if len(blockStates) == self.numBlockCol:
+            for i in range(len(blockStates)):
+                self.setBlockServo(i, blockStates[i])
+    def setLockServos(self, lockStates):
+        if len(lockStates) == self.numLockRow:
+            for j in range(len(lockStates)):
+                self.setLockServo(j, lockStates[j])
+
     #prints displat as a 2d array of int values
     def printDispVal(self): 
         for s in self.displayState: 
@@ -69,19 +78,17 @@ class display:
 
         # Set Servo Positions
         if moveType is DD.ROWLOCK or moveType is DD.ROWUNLOCK:
-            if len(moves) == self.numLockRow:
-                for j in range(len(moves)):
-                    self.setLockServo(j, moves[j], False)
+            print(moves)
+            self.setLockServos(moves)
         elif moveType is DD.COLRETURN or moveType is DD.COLACTUATE:
-            if len(moves) == self.numBlockCol:
-                for i in range(len(moves)):
-                    self.setBlockServo(i, moves[i], False)
+            print(moves)
+            self.setBlockServos(moves)
 
 if __name__ == '__main__':
     dispDimensions = (16, 16) # (width, height)
     pixelKey = ('#080808','#404040','#B0B0B0','#FFFFFF')
     disp = display(dispDimensions, DD.TOP, DD.RIGHT, pixelKey)
-    for i in range(0,dispDimensions[1]):
+    for i in range(dispDimensions[1]):
         disp.setLockServo(i, DD.LOCK)
 
     i = 1
