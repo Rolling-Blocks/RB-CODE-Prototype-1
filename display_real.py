@@ -12,22 +12,11 @@ defaultTimesPerMove = {DD.ROWLOCK: 750, DD.COLRETURN: 1000, DD.ROWUNLOCK: 750, D
 class display_real:
     def __init__(self, display, interface, timePerMove = defaultTimesPerMove):
         
-        self.numLockRow = dispDim[1]
-        self.numBlockCol = dispDim[0]
-
         # timePerMove is the time buffer corresponding to each time delay
         self.timePerMove = timePerMove
 
-        # state of virtual display stored as cube positions 0-3, position corresponds to color in location in pixelcolors
-        self.displayState = [[0]*self.numBlockCol for i in range(self.numLockRow)]
-        self.lockServoState = [DD.UNLOCK] * self.numLockRow
-        self.blockServoState = [DD.MIDDLE] * self.numBlockCol
-
         # Display Real Interface
         self.dispInterface = interface
-        self.dispInterface.setLockServos(self.lockServoState)
-        time.sleep(1)
-        self.dispInterface.setBlockServos(self.blockServoState)
  
     def setLockServo(self, row, state, updateAfter = True):
         """
@@ -85,11 +74,9 @@ class display_real:
         # sentGcode takes in gcode command, 
     def sendGcode(self, arr):
         self.display.sendGcode(arr)
-        #TODO
-        # Remake servo packet
 
-        # Update Servos
-        self.dispInterface.updateServos()
+        # Remake and Send Servo Packet
+        self.dispInterface.updateRealDisplay()
         
         # Send Back Time Buffer Required To Let Display Finish Move 
         return self.timePerMove[arr[0]]
@@ -109,7 +96,7 @@ if __name__ == '__main__':
     
     #disp.printDispVal()
 
-    while False:
+    while True:
         disp.setBlockServos([DD.SUBTRACT] * dispDimensions[0])
         print("SUBTRACT")
         time.sleep(2)
