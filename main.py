@@ -55,11 +55,13 @@ if not real_Disp:
     timesForMoves = {DD.ROWLOCK: 100, DD.COLRETURN: 100, DD.ROWUNLOCK: 100, DD.COLACTUATE: 100}
     dispSim = dv.display_virtual(d, timesForMoves)  
 else:
-    timesForMoves = {DD.ROWLOCK: 250, DD.COLRETURN: 375, DD.ROWUNLOCK: 250, DD.COLACTUATE: 375}
     servoJson = 'display_16x16.json'
     servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
-    dispInter = dri.display_real_interface(servoJson, dispDim, blockBank, lockBank, servoPm) 
-    dispReal = dr.display_real(displayTitle = displayTit, dispDim = d.getDispDim(), interface = dispInter, pixelColors = d.getPixelKey(), timePerMove = timesForMoves)
+    dispInter = dri.display_real_interface(d, servoJson, servoPm) 
+    
+    timesForMoves = {DD.ROWLOCK: 250, DD.COLRETURN: 375, DD.ROWUNLOCK: 250, DD.COLACTUATE: 375}
+    dispReal = dr.display_real(display = d, interface = dispInter, timePerMove = timesForMoves)
+
 
 # Image Specifiers
 imageState = DD.IMG_RAND

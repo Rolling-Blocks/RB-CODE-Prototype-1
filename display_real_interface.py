@@ -25,8 +25,8 @@ class display_real_interface:
 
     def __writeServos(self):      self.servos.write_servos()
     def updateRealDisplay(self):
-        self.__setLockServos(self.d.getLockServoState())
-        self.__setBlockServos(self.d.getBlockServoState())
+        self.setLockServos(self.d.getLockServoState())
+        self.setBlockServos(self.d.getBlockServoState())
         self.__writeServos()
 
     # Updates Standard Packet To Be Sent
@@ -150,12 +150,12 @@ class display_real_interface:
             self.__writeServos()
 
     # Write To Multiple Rows
-    def __setLockServos(self, states):
+    def setLockServos(self, states):
         """
             states      [DD.LOCK or DD.UNLOCK]   length same as number of rows
         """
         if not len(states) == self.d.getDispDim()[1]:
-            print("__setLockServos" + " given invalid number of servo states")
+            print("setLockServos" + " given invalid number of servo states")
         else:
             for i in range(len(states)):
                 self.__setLockServo(i, states[i], updateAfter = False)
@@ -174,12 +174,12 @@ class display_real_interface:
         if updateAfter:
             self.__writeServos()
     
-    def __setBlockServos(self, states):
+    def setBlockServos(self, states):
         """
             states      [DD.SUBTRACT or DD.MIDDLE or DD.ADD]   length same as number of rows
         """
         if not len(states) == self.d.getDispDim()[0]:
-            print("__setBlockServos" + " given invalid number of servo states")
+            print("setBlockServos" + " given invalid number of servo states")
         for i in range(len(states)):
             self.__setBlockServo(i, states[i], updateAfter = False)
         self.__writeServos()
@@ -219,19 +219,30 @@ if __name__ == '__main__':
     display = d.display((16, 16), DD.TOP, DD.RIGHT, ('#080808','#404040','#B0B0B0','#FFFFFF'), '16x16 display_virtual test')
     servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
     dispInter = display_real_interface(display, servoJson, servoPm) 
+    dispDimensions = display.getDispDim()
     
     while True:
-        dispInter.__setBlockServos([DD.SUBTRACT] * dispDimensions[0])
+        dispInter.setBlockServos([DD.SUBTRACT] * dispDimensions[0])
         print("SUBTRACT")
         time.sleep(2)
 
-        dispInter.__setBlockServos([DD.MIDDLE] * dispDimensions[0])
+        dispInter.setBlockServos([DD.MIDDLE] * dispDimensions[0])
         print("MIDDLE")
         time.sleep(2)
 
-        dispInter.__setBlockServos([DD.ADD] * dispDimensions[0])
+        dispInter.setLockServos([DD.UNLOCK] * dispDimensions[1])
+        print("UNLOCK")
+        time.sleep(2)
+
+        dispInter.setBlockServos([DD.ADD] * dispDimensions[0])
         print("ADD")
         time.sleep(2)
+
+        dispInter.setLockServos([DD.LOCK] * dispDimensions[1])
+        print("LOCK")
+        time.sleep(2)
+
+        
 
 
     
