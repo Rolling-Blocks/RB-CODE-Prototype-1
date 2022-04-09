@@ -5,7 +5,7 @@ from disp_def import blockStateKey
 import copy
 import json
 import servo_packet_manager as spm
-from display import getLockBankLocation, getBlockBankLocation, getDispDim
+import display as d
 # Gets States and handles navigation of JSON and publishing to servos
 
 class display_real_interface:
@@ -154,7 +154,7 @@ class display_real_interface:
         """
             states      [DD.LOCK or DD.UNLOCK]   length same as number of rows
         """
-        if not len(states) == self.d.getDispDim[1]:
+        if not len(states) == self.d.getDispDim()[1]:
             print("__setLockServos" + " given invalid number of servo states")
         else:
             for i in range(len(states)):
@@ -178,7 +178,7 @@ class display_real_interface:
         """
             states      [DD.SUBTRACT or DD.MIDDLE or DD.ADD]   length same as number of rows
         """
-        if not len(states) == self.d.getDispDim[0]:
+        if not len(states) == self.d.getDispDim()[0]:
             print("__setBlockServos" + " given invalid number of servo states")
         for i in range(len(states)):
             self.__setBlockServo(i, states[i], updateAfter = False)
