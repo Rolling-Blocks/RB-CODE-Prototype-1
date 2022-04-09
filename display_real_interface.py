@@ -247,9 +247,18 @@ if __name__ == '__main__':
         print("MIDDLE")
         time.sleep(2)
 
+        dispInter.setLockServos([DD.UNLOCK] * dispDimensions[0])
+        print("UNLOCK")
+        time.sleep(2)
+
         dispInter.setBlockServos([DD.ADD] * dispDimensions[0])
         print("ADD")
         time.sleep(2)
+
+        dispInter.setLockServos([DD.LOCK] * dispDimensions[0])
+        print("LOCK")
+        time.sleep(2)
+
 
 
     

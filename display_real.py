@@ -134,7 +134,7 @@ if __name__ == '__main__':
     
     #disp.printDispVal()
 
-    while False:
+    while True:
         disp.setBlockServos([DD.SUBTRACT] * dispDimensions[0])
         print("SUBTRACT")
         time.sleep(2)
