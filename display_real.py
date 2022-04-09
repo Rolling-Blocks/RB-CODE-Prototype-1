@@ -6,12 +6,15 @@ import copy
 import json
 import display_real_interface as dri
 import servo_packet_manager as spm
+from display import __init__, setLockServo, setBlockServo, setLockServos, setBlockServos, sendGcode
 
 defaultTimesPerMove = {DD.ROWLOCK: 750, DD.COLRETURN: 1000, DD.ROWUNLOCK: 750, DD.COLACTUATE: 1000}
 
 class display_real:
     def __init__(self, display, interface, timePerMove = defaultTimesPerMove):
         
+        self.d = display
+
         # timePerMove is the time buffer corresponding to each time delay
         self.timePerMove = timePerMove
 
@@ -83,15 +86,15 @@ class display_real:
 
 
 if __name__ == '__main__':
+    display = display.display((16, 16), DD.TOP, DD.RIGHT, ('#080808','#404040','#B0B0B0','#FFFFFF'), '16x16 display_virtual test')
     servoJson = 'display_16x16.json'
-    dispDimensions = (16, 16) # (width, height)
     servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
-    dispInter = dri.display_real_interface(servoJson, dispDimensions, DD.TOP, DD.RIGHT, servoPm) 
+
+    dispInter = dri.display_real_interface(display, servoJson, servoPm) 
     
-    displayTit = '6x9 test'
-    pixelVal = ('#CD853F','#8B5A2B','#008080','#D8BFD8')
     timePerMove = {DD.ROWLOCK: 750, DD.COLRETURN: 1000, DD.ROWUNLOCK: 750, DD.COLACTUATE: 1000}
-    disp = display_real(displayTitle = displayTit, dispDim = dispDimensions, interface = dispInter, pixelColors = pixelVal, timePerMove = timePerMove)
+    
+    dr = display_real(display = timePerMove = timePerMove)
     # displayTitle, dispDim, interface, pixelColors, timePerMove  
     
     #disp.printDispVal()

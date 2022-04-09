@@ -78,10 +78,8 @@ class display:
 
         # Set Servo Positions
         if moveType is DD.ROWLOCK or moveType is DD.ROWUNLOCK:
-            print(moves)
             self.setLockServos(moves)
         elif moveType is DD.COLRETURN or moveType is DD.COLACTUATE:
-            print(moves)
             self.setBlockServos(moves)
 
 if __name__ == '__main__':
