@@ -7,15 +7,14 @@ import json
 import display_real_interface as dri
 import servo_packet_manager as spm
 
+defaultTimesPerMove = {DD.ROWLOCK: 750, DD.COLRETURN: 1000, DD.ROWUNLOCK: 750, DD.COLACTUATE: 1000}
+
 class display_real:
-    def __init__(self, displayTitle, dispDim, interface, pixelColors, timePerMove):
+    def __init__(self, display, interface, timePerMove = defaultTimesPerMove):
         
-        # numLockRow ~ Height of Diplay
         self.numLockRow = dispDim[1]
-        # numBlockCol ~ width of Diplay
         self.numBlockCol = dispDim[0]
-        # pixelColors (pixelcolor0,pixelcolor1,pixelcolor2,pixelcolor3) pixel color values  
-        self.pixelColors = pixelColors
+
         # timePerMove is the time buffer corresponding to each time delay
         self.timePerMove = timePerMove
 
@@ -29,13 +28,6 @@ class display_real:
         self.dispInterface.setLockServos(self.lockServoState)
         time.sleep(1)
         self.dispInterface.setBlockServos(self.blockServoState)
-
-    def getPixelKey(self):              return self.pixelColors
-    def getDisplayState(self):          return self.displayState
-    def getBlockServosPos(self):        return self.dispInterface.getBlockServosPos(self)
-    def getBlockServoPos(self, col):    return self.dispInterface.getBlockServoPos(self, col)
-    def getLockServosPos(self):         return self.dispInterface.getLockServosPos(self)
-    def getLockServoPos(self, row):     return self.dispInterface.getLockServoPos(self, row)
  
     def setLockServo(self, row, state, updateAfter = True):
         """
@@ -92,32 +84,15 @@ class display_real:
     ## sentGcode
         # sentGcode takes in gcode command, 
     def sendGcode(self, arr):
-        arrCop = copy.deepcopy(arr)
-        moveType = arrCop.pop(0)
-        moves = arrCop.pop(0)
+        self.display.sendGcode(arr)
+        #TODO
+        # Remake servo packet
 
-        # Set Servo Positions
-        if moveType is DD.ROWLOCK or moveType is DD.ROWUNLOCK:
-            if not len(moves) == self.numLockRow:
-                print("Gcode Command Sent Incorrect Number of Servo Commands")
-                print("Expected " + str(self.numLockRow) + ", Recieved " + str(len(moves)))
-            else:
-                #print("Running Lock Actuation")
-                self.setLockServos(moves)
-        elif moveType is DD.COLRETURN or moveType is DD.COLACTUATE:
-            if not len(moves) == self.numBlockCol:
-                print("Gcode Command Sent Incorrect Number of Servo Commands")
-                print("Expected " + str(self.numBlockCol) + ", Recieved " + str(len(moves)))
-            else:
-                self.setBlockServos(moves)
-
+        # Update Servos
+        self.dispInterface.updateServos()
+        
         # Send Back Time Buffer Required To Let Display Finish Move 
-        return self.timePerMove[moveType]
-
-    #prints displat as a 2d array of int values
-    def printDispVal(self):
-        for s in self.displayState:
-            print(s)
+        return self.timePerMove[arr[0]]
 
 
 if __name__ == '__main__':

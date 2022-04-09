@@ -5,22 +5,36 @@ from disp_def import blockStateKey
 import copy
 import json
 import servo_packet_manager as spm
+from display import getLockBankLocation, getBlockBankLocation, getDispDim
 # Gets States and handles navigation of JSON and publishing to servos
 
 class display_real_interface:
-    def __init__(self, servoFile, dispDim, blockSide, lockSide, givenSpm = spm.servo_packet_manager([10,14])):
-        
+    def __init__(self, display, servoFile, givenSpm = spm.servo_packet_manager([10,14])):
+        """
+            display     display
+            servoFile   string of Json file title
+            givenSpm    servoPacketManager
+        """
+        with open(servoFile) as json_file:
+            self.dispServoData = json.load(json_file)
+
+        self.d = display
+
+        # Display Dimensions
+        dispDim =   display.getDispDim()
+        self.numLockRow = dispDim[1]
+        self.numBlockCol = dispDim[0]
+
         # numLockRow ~ Height of Diplay
         self.numLockRow = dispDim[1]
         # lockSide ~ left/right
-        self.lockSide = lockSide
+        self.lockSide = display.getLockBankLocation()
         # numBlockCol ~ width of Diplay
         self.numBlockCol = dispDim[0]
         # blockSide ~ top/bottom
-        self.blockSide = blockSide
+        self.blockSide = display.getBlockBankLocation()
         # display Servo Data, Contains Offset
-        with open(servoFile) as json_file:
-            self.dispServoData = json.load(json_file)
+        
 
         #states of locks unlocked/locked
         self.lockServoState = [DD.UNLOCK] * self.numLockRow
@@ -32,14 +46,13 @@ class display_real_interface:
         self.setLockServos(self.lockServoState)
         self.setBlockServos(self.blockServoState)
 
-
     def getBlockServosState(self):          return self.blockServoState
     def getBlockServoState(self, col):      return self.blockServoState[col]
     def getLockServosState(self):           return self.lockServoState
     def getLockServoState(self, row):       return self.lockServoState[row]
     def updateServos(self):                 self.servos.write_servos()
 
-    def __servoJsonInfo(self, servoType, servoCoordinate): # Written #Untested
+    def __servoJsonInfo(self, servoType, servoCoordinate): #TODO: Test
         """
             servoType       DD.LOCK or DD.BLOCK
             servoCoordinate int
