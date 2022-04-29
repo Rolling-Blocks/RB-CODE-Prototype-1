@@ -125,7 +125,7 @@ class animation:
                     colActActuateTo.append(DD.ADD)
             
             toSend = []
-            for x in range(0, len(mq[i][0])):
+            for x in range(len(mq[i][0])):
                 if x % 2 == 0:
                     toSend.append(colActActuateTo[x])
                 else:
@@ -133,6 +133,18 @@ class animation:
 
             # Moves Half the Columns
             moves.append([DD.COLACTUATE, toSend])
+            
+             # Row Lock
+            rowReMove = DD.ROWLOCK
+            rowReActuateTo = [DD.LOCK] * self.dispHeight
+            moves.append([rowReMove, rowReActuateTo])
+
+            # Row Unlocks
+            rowUnActuateTo = [DD.LOCK] * self.dispHeight
+            for x in range(0, len(mq[i][1])):
+                rowUnActuateTo[mq[i][1][x]] = DD.UNLOCK
+            moves.append([DD.ROWUNLOCK, rowUnActuateTo])
+            
             # Moves the other half
             moves.append([DD.COLACTUATE, colActActuateTo])
         

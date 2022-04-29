@@ -1,45 +1,58 @@
 import random
 import time
+import numpy as np
 from disp_def import DispDef as DD
 from disp_def import blockStateKey
 import copy
 import json
 import servo_packet_manager as spm
+import display as d
 # Gets States and handles navigation of JSON and publishing to servos
 
 class display_real_interface:
-    def __init__(self, servoFile, dispDim, blockSide, lockSide, givenSpm = spm.servo_packet_manager([10,14])):
-        
-        # numLockRow ~ Height of Diplay
-        self.numLockRow = dispDim[1]
-        # lockSide ~ left/right
-        self.lockSide = lockSide
-        # numBlockCol ~ width of Diplay
-        self.numBlockCol = dispDim[0]
-        # blockSide ~ top/bottom
-        self.blockSide = blockSide
-        # display Servo Data, Contains Offset
+    def __init__(self, display, servoFile, givenSpm = spm.servo_packet_manager([10,14])):
+        """
+            display     display
+            servoFile   string of Json file title
+            givenSpm    servoPacketManager
+        """
         with open(servoFile) as json_file:
             self.dispServoData = json.load(json_file)
 
-        #states of locks unlocked/locked
-        self.lockServoState = [DD.UNLOCK] * self.numLockRow
-        
-        # display viewer setup
-        self.blockServoState = [DD.MIDDLE] * self.numBlockCol
+        self.d = display
 
         self.servos = givenSpm
-        self.setLockServos(self.lockServoState)
-        self.setBlockServos(self.blockServoState)
+        self.updateRealDisplay()
 
+    def writeServos(self):        self.servos.write_servos()
+    
+    def updateRealDisplay(self):
+        self.setLockServos(self.d.getLockServoState())
+        self.setBlockServos(self.d.getBlockServoState())
+        self.writeServos()
 
-    def getBlockServosState(self):          return self.blockServoState
-    def getBlockServoState(self, col):      return self.blockServoState[col]
-    def getLockServosState(self):           return self.lockServoState
-    def getLockServoState(self, row):       return self.lockServoState[row]
-    def updateServos(self):                 self.servos.write_servos()
+    # Updates Standard Packet To Be Sent
+    def __setServo(self, st, sc, state):
+        """
+            st          DD.LOCK or DD.BLOCK
+            sc          int (servocoordinate)
+            state       DD. (appropriate)
+        """
+        # Get Data for Write_Display
+        moduleId, servoId, offset = self.__servoInfo(st, sc)
+        # Get what ServoPosition would be if no offset and if servoBays in default places 
+        defaultServoPos = self.__getPosFromState(servoType = st, servoState = state)
+        #print("defaultServoPos givens ~  servoType:" + str(st) + "  servoState:" + str(state))
 
-    def __servoJsonInfo(self, servoType, servoCoordinate): # Written #Untested
+        toSendToServo = self.__bayCompensator(st, defaultServoPos, offset)
+        
+        # Sending Data to Write_Display
+        self.servos.setServo(moduleId, servoId, toSendToServo)
+
+    # __setServo Helper ~ Json Accessor
+        # Given     Servo Type and Coordinate
+        # Returns   moduleId, servoId, centerOffset
+    def __servoInfo(self, servoType, servoCoordinate): #TODO: Test
         """
             servoType       DD.LOCK or DD.BLOCK
             servoCoordinate int
@@ -62,7 +75,7 @@ class display_real_interface:
         #print(toRet)
         return toRet
 
-    # Turns ServoState To Default Servo Position, does not account for bay position
+    # __setServo Helper ~ Turns ServoState To Default Servo Position, does not account for bay position
         # Does not handle for compensation of servo bay position
     def __getPosFromState(self, servoType, servoState): #WRITTEN #UNCHECKED
         """
@@ -92,7 +105,7 @@ class display_real_interface:
 
         return write
 
-    # Returns - absolute Servo Set Position
+    # __setServo Helper ~ Returns - absolute Servo Set Position
         # Compensates for Servo Offsets
         # Compensates for position of the servo array to reverse direction if appropriate
     def __bayCompensator(self, servoType, defaultServoPos, offset):
@@ -117,48 +130,23 @@ class display_real_interface:
         else:
             print("__bayCompensator " + "invalid servoType Given" + " ServoType:" + str(servoType))
 
-        # bounds the servo value to something that can be sent
-        #print("default position given " + str(defaultServoPos))
-        #print("write before bounds " + str(write))
         write = self.__bound(0, write, 255)
-        #print("write after bounds " + str(write))
-        
-        # Reverse if necessary
-        if self.lockSide is DD.LEFT or self.lockSide is DD.BOTTOM:
-            print("reversed")
+
+        if self.d.getLockBankLocation is DD.LEFT or self.d.getBlockBankLocation is DD.BOTTOM:
             write = 255 - write
 
         return write
     
     def __bound(self, low, high, value): return max(low, min(high, value))
-
-    # Updates Standard Packet To Be Sent
-    def __setServo(self, st, sc, state):
-        """
-            st          DD.LOCK or DD.BLOCK
-            sc          int (servocoordinate)
-            state       DD. (appropriate)
-        """
-        # Get Data for Write_Display
-        moduleId, servoId, offset = self.__servoJsonInfo(st, sc)
-        # Get what ServoPosition would be if no offset and if servoBays in default places 
-        defaultServoPos = self.__getPosFromState(servoType = st, servoState = state)
-        #print("defaultServoPos givens ~  servoType:" + str(st) + "  servoState:" + str(state))
-
-        toSendToServo = self.__bayCompensator(st, defaultServoPos, offset)
-
-        # Update Logged Servo State
-        self.lockServoState[sc] = state
-        
-        # Sending Data to Write_Display
-        self.servos.setServo(moduleId, servoId, toSendToServo)
-    
+  
     # Write To Singular Row
     def setLockServo(self, row, state, updateAfter = True):
         """
             row         [int]
             state       [DD.LOCK or DD.UNLOCK]
         """
+        print("row " + str(row))
+        print(state)
         self.__setServo(st = DD.LOCK_SERVO, sc = row, state = state)
 
         # Update Display
@@ -170,15 +158,12 @@ class display_real_interface:
         """
             states      [DD.LOCK or DD.UNLOCK]   length same as number of rows
         """
-        if not len(states) == self.numLockRow:
+        if not len(states) == self.d.getDispDim()[1]:
             print("setLockServos" + " given invalid number of servo states")
         else:
             for i in range(len(states)):
                 self.setLockServo(i, states[i], updateAfter = False)
         self.writeServos()
-
-    def writeServos(self):
-        self.servos.write_servos()
 
     ### Copy For Columns once Lock Code Checked    
     def setBlockServo(self, col, state, updateAfter = True):
@@ -186,6 +171,8 @@ class display_real_interface:
             col         [int]
             state       DD.SUBTRACT or DD.MIDDLE or DD.ADD
         """
+        print("col " + str(col))
+        print(state)
         self.__setServo(st = DD.BLOCK_SERVO, sc = col, state = state)
 
         # Update Display
@@ -196,10 +183,11 @@ class display_real_interface:
         """
             states      [DD.SUBTRACT or DD.MIDDLE or DD.ADD]   length same as number of rows
         """
-        if not len(states) == self.numBlockCol:
+        if not len(states) == self.d.getDispDim()[0]:
             print("setBlockServos" + " given invalid number of servo states")
-        for i in range(len(states)):
-            self.setBlockServo(i, states[i], updateAfter = False)
+        else:
+            for i in range(len(states)):
+                self.setBlockServo(i, states[i], updateAfter = False)
         self.writeServos()
 
     def __checkParametersValid(self, servoCoordinate, servoType, servoState):
@@ -231,29 +219,171 @@ class display_real_interface:
         # Everything is Valid
         return True
 
-
 if __name__ == '__main__':
     servoJson = 'display_16x16.json'
-    dispDimensions = (16, 16) # (width, height)
+    display = d.display((16, 16), DD.TOP, DD.RIGHT, ('#080808','#404040','#B0B0B0','#FFFFFF'), '16x16 display_virtual test')
     servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
-    dispInter = display_real_interface(servoJson, dispDimensions, DD.TOP, DD.RIGHT, servoPm) 
+    dispInter = display_real_interface(display, servoJson, servoPm) 
+    dispDimensions = display.getDispDim()
     
-    while True:
+    dispInter.setLockServos([DD.LOCK] * dispDimensions[1])
+    print("LOCK")
+    time.sleep(.5)
+
+    # dispInter.setLockServos([DD.UNLOCK] * dispDimensions[1])
+    # print("UNLOCK")
+    # time.sleep(.5)
+
+    dispInter.setBlockServos([DD.MIDDLE] * dispDimensions[1])
+    print("LOCK")
+    time.sleep(.5)
+
+    dispInter.setLockServos([DD.UNLOCK] * dispDimensions[0])
+    print("UNLOCK")
+    time.sleep(2)
+
+    dispInter.setBlockServos([DD.ADD] * dispDimensions[0])
+    print("ADD")
+    time.sleep(2)
+    
+    if False:
+        dispInter.setLockServos([DD.LOCK] * dispDimensions[1])
+        print("LOCK")
+        time.sleep(.5)
+
         dispInter.setBlockServos([DD.SUBTRACT] * dispDimensions[0])
         print("SUBTRACT")
-        time.sleep(2)
+        time.sleep(.5)
 
-        dispInter.setBlockServos([DD.MIDDLE] * dispDimensions[0])
-        print("MIDDLE")
-        time.sleep(2)
-
-        dispInter.setLockServos([DD.UNLOCK] * dispDimensions[0])
+        dispInter.setLockServos([DD.UNLOCK] * dispDimensions[1])
         print("UNLOCK")
-        time.sleep(2)
+        time.sleep(.5)
 
-        dispInter.setBlockServos([DD.ADD] * dispDimensions[0])
-        print("ADD")
-        time.sleep(2)
+        for i in np.arange(0,dispDimensions[0],2):
+            print("setBlockServo " + str(i))
+            dispInter.setBlockServo(i, DD.MIDDLE, updateAfter = False)
+        dispInter.writeServos()
+        time.sleep(.75)
+
+        dispInter.setLockServos([DD.LOCK] * dispDimensions[1])
+        print("LOCK")
+        time.sleep(.5)
+
+        dispInter.setLockServos([DD.UNLOCK] * dispDimensions[1])
+        print("UNLOCK")
+        time.sleep(.5)
+
+        for i in np.arange(1,dispDimensions[0],2):
+            print("setBlockServo " + str(i))
+            dispInter.setBlockServo(i, DD.MIDDLE, updateAfter = False)
+        dispInter.writeServos()
+        time.sleep(.75)
+
+        dispInter.setLockServos([DD.LOCK] * dispDimensions[1])
+        print("LOCK")
+        time.sleep(.5)
+
+    while False:
+        dispInter.setLockServos([DD.LOCK] * dispDimensions[1])
+        print("LOCK")y
+        time.sleep(.5)
+
+        while True:
+            dispInter.setBlockServos([DD.ADD] * dispDimensions[0])
+            print("ADD")
+            time.sleep(.5)
+
+            dispInter.setBlockServos([DD.SUBTRACT] * dispDimensions[0])
+            print("SUBTRACT")
+            time.sleep(.5)
+
+    first = True
+    while False:
+
+        # dispInter.setBlockServos([DD.MIDDLE] * dispDimensions[0])
+        # print("MIDDLE")
+        # time.sleep(.375)
+
+        # dispInter.setLockServos([DD.LOCK] * dispDimensions[1])
+        # print("LOCK")
+        # time.sleep(2)
+
+        dispInter.setLockServos([DD.LOCK] * dispDimensions[1])
+        print("LOCK")
+        time.sleep(.5)
+
+        dispInter.setLockServos([DD.UNLOCK] * dispDimensions[1])
+        print("UNLOCK")
+        time.sleep(.5)
+
+        if first:
+            first = False
+
+            dispInter.setBlockServos([DD.ADD] * dispDimensions[0])
+            print("ADD")
+            time.sleep(1)
+
+        # dispInter.setBlockServos([DD.SUBTRACT] * dispDimensions[0])
+        # print("SUBTRACT")
+        # time.sleep(.375)
+
+        # dispInter.setBlockServos([DD.MIDDLE] * dispDimensions[0])
+        # print("MIDDLE")
+        # time.sleep(1)
+
+        for i in range(3):
+            # Adds
+            for i in np.arange(0,dispDimensions[0],2):
+                print("setBlockServo " + str(i))
+                dispInter.setBlockServo(i, DD.ADD, updateAfter = False)
+            dispInter.writeServos()
+            time.sleep(.25)
+
+            # middles
+            for i in np.arange(0,dispDimensions[0],2):
+                print("setBlockServo " + str(i))
+                dispInter.setBlockServo(i, DD.SUBTRACT, updateAfter = False)
+            dispInter.writeServos()
+            time.sleep(.25)
+
+
+        for i in range(3):
+            for i in np.arange(1,dispDimensions[0],2):
+                print("setBlockServo " + str(i))
+                dispInter.setBlockServo(i, DD.ADD, updateAfter = False)
+            dispInter.writeServos()
+            time.sleep(.25)
+
+
+            for i in np.arange(1,dispDimensions[0],2):
+                print("setBlockServo " + str(i))
+                dispInter.setBlockServo(i, DD.SUBTRACT, updateAfter = False)
+            dispInter.writeServos()
+            time.sleep(.25)
+
+        dispInter.setLockServos([DD.LOCK] * dispDimensions[1])
+        print("LOCK")
+        time.sleep(.5)
+
+        dispInter.setLockServos([DD.UNLOCK] * dispDimensions[1])
+        print("UNLOCK")
+        time.sleep(.5)
+
+        time.sleep(1)
+        for i in range(3):
+            for i in np.arange(0,dispDimensions[0],2):
+                print("setBlockServo " + str(i))
+                dispInter.setBlockServo(i, DD.MIDDLE, updateAfter = False)
+            dispInter.writeServos()
+            time.sleep(.75)
+
+
+            for i in np.arange(1,dispDimensions[0],2):
+                print("setBlockServo " + str(i))
+                dispInter.setBlockServo(i, DD.MIDDLE, updateAfter = False)
+            dispInter.writeServos()
+            time.sleep(.75)
+        time.sleep(1)
 
         dispInter.setLockServos([DD.LOCK] * dispDimensions[0])
         print("LOCK")
