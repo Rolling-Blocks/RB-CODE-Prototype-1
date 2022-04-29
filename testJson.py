@@ -4,6 +4,7 @@
  
 # importing the module
 import json
+import numpy as np
 
 # Opening JSON file
 with open('display_16x16.json') as json_file:
@@ -33,3 +34,5 @@ def my_function(fname): print(fname + " Refsnes")
 my_function("sedrrt")
 
 print(data)
+
+print(np.arange(0,17,2))

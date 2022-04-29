@@ -40,7 +40,6 @@ if not real_Disp:
 d = display.display((16, 16), DD.TOP, DD.RIGHT, ('#545454', '#1F1F1F', '#0D0D0D', '#FFFFFF'), '16x16 display_virtual test')
 
 ## Times for each move (ROWLOCK, COLRETURN, ROWUNLOCK, COLACTUATE) in ms
-timesForMoves = {DD.ROWLOCK: 500, DD.COLRETURN: 500, DD.ROWUNLOCK: 500, DD.COLACTUATE: 500}
 a = ani.animation(d.getDispDim())
 am = arrMap.array_manipulator()
 imgDirectory = "/DispPics"
@@ -59,7 +58,7 @@ else:
     servoPm = spm.servo_packet_manager(module_IDs = [10, 14])
     dispInter = dri.display_real_interface(d, servoJson, servoPm) 
     
-    timesForMoves = {DD.ROWLOCK: 250, DD.COLRETURN: 375, DD.ROWUNLOCK: 250, DD.COLACTUATE: 375}
+    timesForMoves = {DD.ROWLOCK: 250, DD.COLRETURN: 1000, DD.ROWUNLOCK: 250, DD.COLACTUATE: 1000}
     dispReal = dr.display_real(display = d, interface = dispInter, timePerMove = timesForMoves)
 
 
